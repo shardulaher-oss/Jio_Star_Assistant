@@ -18,7 +18,7 @@ import streamlit as st  # noqa: E402
 
 from contract_intelligence.answering.generator import AnswerGenerator, load_dotenv  # noqa: E402
 from contract_intelligence.cli import with_overrides  # noqa: E402
-from contract_intelligence.config import PROJECT_ROOT, AnswerConfig, load_config  # noqa: E402
+from contract_intelligence.config import PROJECT_ROOT, AnswerConfig, ConfigError, load_config  # noqa: E402
 from contract_intelligence.retrieval.retriever import Retriever  # noqa: E402
 
 EXAMPLES = [
@@ -137,7 +137,13 @@ def main() -> None:
     if not st.button("Search", type="primary") and not question:
         return
 
-    cached = get_retriever(str(PROJECT_ROOT / config_path))
+    try:
+        cached = get_retriever(str(PROJECT_ROOT / config_path))
+    except (ConfigError, FileNotFoundError, ValueError) as error:
+        st.error(f"Could not load `{config_path}`: {error}")
+        st.info("Run `python -m contract_intelligence.data.prepare` to download and verify the data, "
+                "then retry. See the README for setup.")
+        st.stop()
     # Per-request settings on top of the shared, cached model and index.
     config = with_overrides(base, top_k=top_k, threshold=threshold, no_abstain=not abstain)
     result = Retriever(config, cached.encoder, cached.dense, cached.ranker).search(question)

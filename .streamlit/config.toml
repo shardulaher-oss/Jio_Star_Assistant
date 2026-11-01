@@ -1,0 +1,11 @@
+# Demo deployment settings. The app serves contract text, so by default it is only
+# reachable from this machine. To expose it, put it behind an authenticating proxy;
+# do not just change the address.
+[server]
+address = "localhost"
+headless = true
+enableXsrfProtection = true
+maxUploadSize = 1   # MB; the app has no upload feature
+
+[browser]
+gatherUsageStats = false
