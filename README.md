@@ -86,6 +86,21 @@ To recalibrate the threshold (train queries and train unanswerable queries only)
 .\.venv\Scripts\python.exe -m contract_intelligence.retrieval.calibrate --config configs/baseline.yaml
 ```
 
+## Evaluation
+
+```powershell
+.\.venv\Scripts\python.exe -m contract_intelligence.evaluation.runner --config configs/baseline.yaml --split train
+```
+
+This reports character-level precision and recall at k = 1, 2, 4, 8, 16, 32 and 64
+(mirroring the LegalBench-RAG authors' implementation), abstention in both directions,
+and a per-query failure diagnosis. Results are written to
+`experiments/runs/<config>__<split>/`. The train run takes about 15 seconds once the
+index exists.
+
+Test runs require `--split test --reason "..."`, and each one is appended to
+`experiments/test_runs.jsonl`, so the number of test runs is recorded.
+
 ## Planned reproducibility contract
 
 The implementation must select exactly 194 CUAD queries with the benchmark authors' `mini()` procedure, index only contracts referenced by those queries, preserve UTF-8 character offsets, use the specified SHA-256 split, freeze at least 30 unanswerable questions before optimization, and keep all improvement decisions reproducible from configuration and experiment logs.
