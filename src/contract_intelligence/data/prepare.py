@@ -170,36 +170,32 @@ def prepare(
             encoding="utf-8",
         )
 
-    negatives_path.parent.mkdir(parents=True, exist_ok=True)
-    if not negatives_path.exists():
-        negatives = [
-            {
-                "id": f"unanswerable-{index:03d}",
-                "query": query,
-                "answerable": False,
-                "split": assign_split(query),
-                "reason": "The named agreement is not among the indexed CUAD contracts.",
-            }
-            for index, query in enumerate(
-                [
-                    f"What is the governing law of the fictional Aurora Moon Streaming Agreement {i}?"
-                    for i in range(1, 31)
-                ],
-                1,
-            )
-        ]
-        negatives_path.write_text(
-            json.dumps(negatives, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+    negatives = load_unanswerable(negatives_path)
 
     return {
         "query_count": len(records),
         "train_count": manifest["train_count"],
         "test_count": manifest["test_count"],
         "referenced_contract_count": len(referenced_paths),
-        "unanswerable_count": 30,
+        "unanswerable_count": len(negatives),
+        "unanswerable_train_count": sum(n["split"] == "train" for n in negatives),
+        "unanswerable_test_count": sum(n["split"] == "test" for n in negatives),
     }
+
+
+def load_unanswerable(path: Path) -> list[dict[str, object]]:
+    """Load the hand-written, frozen unanswerable set and check its labels."""
+    negatives = json.loads(path.read_text(encoding="utf-8"))
+    if len(negatives) < 30:
+        raise ValueError(f"Expected at least 30 unanswerable queries, got {len(negatives)}")
+    if len({n["query"] for n in negatives}) != len(negatives):
+        raise ValueError("Unanswerable queries must be unique")
+    for negative in negatives:
+        if negative["answerable"] is not False:
+            raise ValueError(f"{negative['id']} must be labelled answerable=false")
+        if negative["split"] != assign_split(str(negative["query"])):
+            raise ValueError(f"{negative['id']} split does not match assign_split()")
+    return negatives
 
 
 if __name__ == "__main__":

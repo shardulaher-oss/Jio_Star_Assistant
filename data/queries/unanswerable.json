@@ -1,212 +1,371 @@
 [
   {
     "id": "unanswerable-001",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 1?",
+    "query": "Consider the Gas Franchise Agreement between the Town of Vinton and Roanoke Gas Company; Does this agreement allow sublicensing of content to a third-party streaming platform?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/RgcResourcesInc_20151216_8-K_EX-10.3_9372751_EX-10.3_Franchise Agreement.txt",
+    "reason": "No occurrence of 'sublicens', 'stream', 'content' or 'broadcast'; a utility franchise grants no content rights."
   },
   {
     "id": "unanswerable-002",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 2?",
+    "query": "Consider the Gas Transportation Agreement between PennTex North Louisiana Operating, LLC and MRD Operating LLC; Is there a non-disparagement clause in this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/PenntexMidstreamPartnersLp_20150416_S-1A_EX-10.4_9042833_EX-10.4_Transportation Agreement.txt",
+    "reason": "No occurrence of 'disparag' or 'derogator'."
   },
   {
     "id": "unanswerable-003",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 3?",
+    "query": "Consider the Non-Competition Agreement and Right of First Offer between Glamis Gold Ltd. and Western Copper Corporation; What are the insurance requirements under this contract?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/WESTERN COPPER - NON-COMPETITION AGREEMENT.txt",
+    "reason": "No occurrence of 'insur'."
   },
   {
     "id": "unanswerable-004",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 4?",
+    "query": "Consider the Service Agreement between Theravance Biopharma UK Limited and Brett Haumann; Is there a minimum purchase commitment under this contract?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/THERAVANCEBIOPHARMA,INC_05_08_2020-EX-10.2-SERVICE AGREEMENT.txt",
+    "reason": "Employment agreement; no occurrence of 'purchase'."
   },
   {
     "id": "unanswerable-005",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 5?",
+    "query": "Consider the Business Affiliate Agreement between Dr. George D. Green and UNION DENTAL CORP.; Does this contract grant any broadcast or streaming rights?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/UnionDentalHoldingsInc_20050204_8-KA_EX-10_3345577_EX-10_Affiliate Agreement.txt",
+    "reason": "No occurrence of 'broadcast', 'stream', 'televis' or 'media'."
   },
   {
     "id": "unanswerable-006",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 6?",
+    "query": "Consider the Amendment and Termination of Joint Venture Agreement between Veoneer and Nissin Parties; When does the exclusivity period end, and which territories does it cover?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/VEONEER,INC_02_21_2020-EX-10.11-JOINT VENTURE AGREEMENT.txt",
+    "reason": "No occurrence of 'exclusiv' or 'territor'."
   },
   {
     "id": "unanswerable-007",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 7?",
+    "query": "Consider the Cooperation Agreement between HPIL ENERGYTECH Inc. and GINARES GROUP AG for Renewable Energy Projects; What royalty rate is payable under this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/HPILHOLDING_01_07_2015-EX-99.1-COOPERATION AGREEMENT.txt",
+    "reason": "No occurrence of 'royalt'."
   },
   {
     "id": "unanswerable-008",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 8?",
+    "query": "Consider the Endorsement Agreement between Holiday RV Superstores, Inc. and Affinity Group, Inc. for Good Sam Branding; Is there a covenant not to sue included in this contract?",
     "answerable": false,
-    "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "test",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/HOLIDAYRVSUPERSTORESINC_04_15_2002-EX-10.13-ENDORSEMENT AGREEMENT.txt",
+    "reason": "No occurrence of 'not to sue'; 'claim' hits are indemnification only."
   },
   {
     "id": "unanswerable-009",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 9?",
+    "query": "Consider the Agency Agreement between General Electric Capital Corporation and Duckwall-Alco Stores, Inc. for Equipment Leasing; Is there a clause preventing the solicitation of employees in this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/ALCOSTORESINC_12_14_2005-EX-10.26-AGENCY AGREEMENT.txt",
+    "reason": "No occurrence of 'solicit', 'hire', 'recruit' or 'employ'."
   },
   {
     "id": "unanswerable-010",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 10?",
+    "query": "Consider the Sponsorship Agreement between R. C. Boyd Enterprises, LLC and Cano Petroleum, Inc. for 'Honey Hole'; What are the audit rights under this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/CANOPETROLEUM,INC_12_13_2007-EX-10.1-Sponsorship Agreement.txt",
+    "reason": "No occurrence of 'audit', 'inspect', 'records' or 'examine'."
   },
   {
     "id": "unanswerable-011",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 11?",
+    "query": "Consider the Amendment No. 3 to Wireless Content License Agreement between Fox Mobile Entertainment, Inc. and Glu Mobile Inc.; What is the governing law for this contract?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/GluMobileInc_20070319_S-1A_EX-10.09_436630_EX-10.09_Content License Agreement4.txt",
+    "reason": "The amendment has no governing-law clause (no 'governed', 'laws of', 'jurisdiction'); it would be in the unindexed original agreement."
   },
   {
     "id": "unanswerable-012",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 12?",
+    "query": "Consider the Co-Branding Agreement between PC Quote, Inc. and A.B. Watley, Inc. for Market Data Software; What are the insurance requirements under this contract?",
     "answerable": false,
-    "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "test",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/PcquoteComInc_19990721_S-1A_EX-10.11_6377149_EX-10.11_Co-Branding Agreement1.txt",
+    "reason": "No occurrence of 'insur'; liability hits are limitation and indemnity only."
   },
   {
     "id": "unanswerable-013",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 13?",
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Is there a non-disparagement clause in this contract?",
     "answerable": false,
     "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+    "reason": "No occurrence of 'disparag'."
   },
   {
     "id": "unanswerable-014",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 14?",
+    "query": "Consider the Sponsorship Agreement between Excite, Inc. and Vitamin Shoppe Industries Inc. for Promotion on WebCrawler Channels; Is there a most favored nation clause in this contract?",
     "answerable": false,
     "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/VITAMINSHOPPECOMINC_09_13_1999-EX-10.26-SPONSORSHIP AGREEMENT.txt",
+    "reason": "No occurrence of 'favo', 'best price' or 'lowest price'."
   },
   {
     "id": "unanswerable-015",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 15?",
+    "query": "Consider the Co-Branding and Services Agreement between RSL COM PrimeCall, Inc. and deltathree.com, Inc.; Is there a non-disparagement clause in this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/DeltathreeInc_19991102_S-1A_EX-10.19_6227850_EX-10.19_Co-Branding Agreement_ Service Agreement.txt",
+    "reason": "No occurrence of 'disparag'."
   },
   {
     "id": "unanswerable-016",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 16?",
+    "query": "Consider the Agency Agreement for Asset Sale between The Bon-Ton Stores, Inc., GA Retail, Inc., Tiger Capital Group, LLC, and Wilmington Savings Fund Society, FSB; What royalty rate is payable under this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/BONTONSTORESINC_04_20_2018-EX-99.3-AGENCY AGREEMENT.txt",
+    "reason": "No occurrence of 'royalt'."
   },
   {
     "id": "unanswerable-017",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 17?",
+    "query": "Consider the Sponsorship Agreement between Jacksonville Jaguars, LLC and The ARC Group, Inc.; What royalty is payable on merchandise sales under this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/ArcGroupInc_20171211_8-K_EX-10.1_10976103_EX-10.1_Sponsorship Agreement.txt",
+    "reason": "No occurrence of 'royalt'."
   },
   {
     "id": "unanswerable-018",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 18?",
+    "query": "Consider the Walabot HOME Reseller Agreement between Vayyar Imaging Ltd. and Inde Living Holdings, Inc.; Is there a non-disparagement clause in this contract?",
     "answerable": false,
-    "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "test",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/HealthcareIntegratedTechnologiesInc_20190812_8-K_EX-10.1_11776966_EX-10.1_Reseller Agreement.txt",
+    "reason": "No occurrence of 'disparag'."
   },
   {
     "id": "unanswerable-019",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 19?",
+    "query": "Consider the Strategic Alliance Agreement between Sucampo Pharmaceuticals, Inc., Sucampo Pharma, LLC, and R-Tech Ueno, Ltd.; Who owns the IP in derivative audiovisual works produced under this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/SUCAMPOPHARMACEUTICALS,INC_11_04_2015-EX-10.2-STRATEGIC ALLIANCE AGREEMENT.txt",
+    "reason": "No occurrence of 'audiovisual', 'film', 'broadcast' or 'stream'."
   },
   {
     "id": "unanswerable-020",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 20?",
+    "query": "Consider the Joint Venture Agreement between Tate & Lyle Fermentation Products Ltd. and Igene Biotechnology, Inc. for Astaxanthin Production; Can the content be sublicensed to a third-party streaming platform under this contract?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "clause_absent_from_indexed_contract",
+    "target_contract": "cuad/IGENEBIOTECHNOLOGYINC_05_13_2003-EX-1-JOINT VENTURE AGREEMENT.txt",
+    "reason": "No occurrence of 'sublicens', 'stream' or 'broadcast'."
   },
   {
     "id": "unanswerable-021",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 21?",
+    "query": "Consider the Content License Agreement between Starlight Pictures Ltd. and Nimbus Streaming Inc.; Does this agreement allow the licensee to sublicense the content to a third-party platform?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-022",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 22?",
+    "query": "Consider the Co-Production Agreement between Harbor Lane Films and Meridian Studios for 'The Last Monsoon'; Who owns the intellectual property in derivative works?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-023",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 23?",
+    "query": "Consider the Distribution Agreement between Vantage Media Group and Coastal Cinemas LLC; When does the exclusivity period end?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-024",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 24?",
+    "query": "Consider the Music Synchronization License between Echo Valley Records and Brightframe Productions; What is the license fee under this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-025",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 25?",
+    "query": "Consider the Sports Broadcasting Rights Agreement between the Northern Premier Cricket League and SkyArc Television; Which territories are covered by the broadcast rights?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-026",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 26?",
+    "query": "Consider the Talent Agreement between Orion Talent Partners and Maya Desai for 'City of Echoes'; What is the governing law for this contract?",
     "answerable": false,
-    "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "split": "train",
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-027",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 27?",
+    "query": "Consider the Format License Agreement between Quizmaster Formats BV and Lotus Entertainment Pvt. Ltd.; Can the licensee adapt the format for regional-language versions?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-028",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 28?",
+    "query": "Consider the Merchandising License Agreement between Pixel Fox Animation and Toyland Retail Corp.; What royalty rate is payable on net sales?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-029",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 29?",
+    "query": "Consider the Video-on-Demand License Agreement between Silverline Studios and Kestrel OTT Ltd.; What are the holdback windows for pay-TV?",
     "answerable": false,
     "split": "test",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
   },
   {
     "id": "unanswerable-030",
-    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 30?",
+    "query": "Consider the Clip License Agreement between Newsreel Archive Co. and Brightside Promotions; Can licensed clips be used in promotional trailers?",
+    "answerable": false,
+    "split": "test",
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "The named agreement is not among the indexed contracts."
+  },
+  {
+    "id": "unanswerable-031",
+    "query": "Consider the Sponsorship Agreement between Jacksonville Jaguars, LLC and Redwave Beverages Inc.; What is the expiration date of this contract?",
     "answerable": false,
     "split": "train",
-    "reason": "The named agreement is not among the indexed CUAD contracts."
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "Near miss: a real party or title from the corpus paired with an agreement that is not indexed."
+  },
+  {
+    "id": "unanswerable-032",
+    "query": "Consider the Endorsement Agreement between ABG-Shaq, LLC and Burger Barn Inc.; Is there a non-disparagement clause in this contract?",
+    "answerable": false,
+    "split": "test",
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "Near miss: a real party or title from the corpus paired with an agreement that is not indexed."
+  },
+  {
+    "id": "unanswerable-033",
+    "query": "Consider the Amendment No. 4 to Wireless Content License Agreement between Fox Mobile Entertainment, Inc. and Glu Mobile Inc.; What is the expiration date of this contract?",
+    "answerable": false,
+    "split": "train",
+    "category": "contract_not_in_corpus",
+    "target_contract": null,
+    "reason": "Near miss: a real party or title from the corpus paired with an agreement that is not indexed."
+  },
+  {
+    "id": "unanswerable-034",
+    "query": "What is the current share price of Papa John's International?",
+    "answerable": false,
+    "split": "train",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "Market data; not stated in any contract."
+  },
+  {
+    "id": "unanswerable-035",
+    "query": "How many paying subscribers does our streaming service have in India?",
+    "answerable": false,
+    "split": "train",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "Business metric; not in any contract."
+  },
+  {
+    "id": "unanswerable-036",
+    "query": "Summarize the main provisions of the Indian Copyright Act, 1957.",
+    "answerable": false,
+    "split": "train",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "Statute, not an indexed contract."
+  },
+  {
+    "id": "unanswerable-037",
+    "query": "Which of the indexed contracts were later litigated, and what was the outcome?",
+    "answerable": false,
+    "split": "train",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "Post-signing events are not in contract text."
+  },
+  {
+    "id": "unanswerable-038",
+    "query": "What is the weather forecast for Mumbai tomorrow?",
+    "answerable": false,
+    "split": "test",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "Unrelated to contracts."
+  },
+  {
+    "id": "unanswerable-039",
+    "query": "Who won the ICC Cricket World Cup in 2011?",
+    "answerable": false,
+    "split": "test",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "Unrelated to contracts."
+  },
+  {
+    "id": "unanswerable-040",
+    "query": "Write a marketing email announcing our new streaming plan.",
+    "answerable": false,
+    "split": "test",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "Generation request, not a clause lookup."
+  },
+  {
+    "id": "unanswerable-041",
+    "query": "How much total endorsement income did Shaquille O'Neal earn last year?",
+    "answerable": false,
+    "split": "train",
+    "category": "out_of_scope",
+    "target_contract": null,
+    "reason": "External fact; the endorsement contract states only its own terms."
   }
 ]
