@@ -1,0 +1,19 @@
+{
+  "config": "graph_rag",
+  "pipeline": "graph",
+  "reranker": null,
+  "chunks": 1817,
+  "build": {
+    "dense_index_seconds": 39.94,
+    "graph_seconds": 1.46
+  },
+  "startup_seconds": 6.08,
+  "memory_mb_added_by_retriever": 441,
+  "latency_ms": {
+    "n": 50,
+    "median": 5.7,
+    "p95": 7.1,
+    "max": 9.6
+  },
+  "machine": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel, 10 cores, CPU only"
+}

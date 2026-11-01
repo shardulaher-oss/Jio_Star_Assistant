@@ -1,0 +1,19 @@
+{
+  "config": "hybrid_rag",
+  "pipeline": "hybrid",
+  "reranker": "cross-encoder/ms-marco-MiniLM-L6-v2",
+  "chunks": 1817,
+  "build": {
+    "dense_index_seconds": 39.68,
+    "bm25_seconds": 0.1
+  },
+  "startup_seconds": 5.99,
+  "memory_mb_added_by_retriever": 449,
+  "latency_ms": {
+    "n": 50,
+    "median": 888.0,
+    "p95": 1773.1,
+    "max": 1895.0
+  },
+  "machine": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel, 10 cores, CPU only"
+}

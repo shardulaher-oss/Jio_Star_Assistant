@@ -1,0 +1,18 @@
+{
+  "config": "traditional_rag",
+  "pipeline": "dense",
+  "reranker": null,
+  "chunks": 1817,
+  "build": {
+    "dense_index_seconds": 37.42
+  },
+  "startup_seconds": 5.22,
+  "memory_mb_added_by_retriever": 346,
+  "latency_ms": {
+    "n": 50,
+    "median": 7.8,
+    "p95": 10.3,
+    "max": 11.3
+  },
+  "machine": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel, 10 cores, CPU only"
+}

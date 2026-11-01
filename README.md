@@ -109,6 +109,29 @@ To recalibrate the threshold (train queries and train unanswerable queries only)
 .\.venv\Scripts\python.exe -m contract_intelligence.retrieval.calibrate --config configs/baseline.yaml
 ```
 
+## Architectures
+
+Each architecture is a config selected by `retrieval.pipeline`. All four share the
+corpus, the sentence-aware 800-character chunks, the embedding model and the
+evaluation code.
+
+| Config | Pipeline | What it does |
+|---|---|---|
+| `configs/baseline.yaml` | `dense` | Phase 1 baseline: fixed 500-character chunks, dense FAISS |
+| `configs/traditional_rag.yaml` | `dense` | Dense FAISS on sentence-aware 800-character chunks |
+| `configs/graph_rag.yaml` | `graph` | Route to the named contract via the knowledge graph, rank its clauses by the question, expand along graph edges |
+| `configs/hybrid_rag.yaml` | `hybrid` | BM25 + dense, Reciprocal Rank Fusion, cross-encoder reranking |
+| `configs/graph_hybrid_rag.yaml` | `graph_hybrid` | Graph routing, then graph + routed BM25 + global dense fused with RRF |
+
+Run any of them with `--config`, e.g.
+`python -m contract_intelligence.cli --config configs/graph_rag.yaml query "..."`.
+To print a comparison of saved train runs:
+
+```powershell
+.\.venv\Scripts\python.exe -m contract_intelligence.evaluation.compare traditional_rag graph_rag hybrid_rag graph_hybrid_rag
+.\.venv\Scripts\python.exe -m contract_intelligence.evaluation.benchmark --config configs/graph_rag.yaml
+```
+
 ## Interfaces
 
 Both interfaces call the same `Retriever`, so they return identical results for the

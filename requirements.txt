@@ -16,3 +16,6 @@ streamlit>=1.66,<2.0
 
 # Testing
 pytest>=8.0,<10.0
+
+# Benchmarking
+psutil>=7.0,<8.0
