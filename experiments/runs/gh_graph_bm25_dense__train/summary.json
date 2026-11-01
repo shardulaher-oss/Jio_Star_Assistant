@@ -1,0 +1,91 @@
+{
+  "config": "gh_graph_bm25_dense",
+  "split": "train",
+  "n_answerable": 140,
+  "n_unanswerable": 30,
+  "top_k": 10,
+  "abstain_threshold": 0.5214,
+  "retrieval": {
+    "precision": {
+      "1": 0.1441,
+      "2": 0.1314,
+      "4": 0.0915,
+      "8": 0.0643,
+      "16": 0.0374,
+      "32": 0.0214,
+      "64": 0.0122
+    },
+    "recall": {
+      "1": 0.2073,
+      "2": 0.3779,
+      "4": 0.5325,
+      "8": 0.6953,
+      "16": 0.77,
+      "32": 0.9054,
+      "64": 0.9665
+    },
+    "precision_merged": {
+      "1": 0.1441,
+      "2": 0.1314,
+      "4": 0.0915,
+      "8": 0.0643,
+      "16": 0.0374,
+      "32": 0.0214,
+      "64": 0.0122
+    },
+    "recall_merged": {
+      "1": 0.2073,
+      "2": 0.3779,
+      "4": 0.5325,
+      "8": 0.6953,
+      "16": 0.77,
+      "32": 0.9054,
+      "64": 0.9665
+    },
+    "doc_hit_rate": {
+      "1": 0.9786,
+      "2": 0.9786,
+      "4": 0.9857,
+      "8": 0.9929,
+      "16": 0.9929,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "mrr": 0.4589
+  },
+  "end_to_end": {
+    "precision": {
+      "1": 0.0,
+      "2": 0.0,
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "recall": {
+      "1": 0.0,
+      "2": 0.0,
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    }
+  },
+  "abstention": {
+    "unanswerable_correctly_abstained": 1.0,
+    "answerable_wrongly_abstained": 1.0,
+    "balanced_accuracy": 0.5,
+    "by_unanswerable_category": {
+      "clause_absent_from_indexed_contract": "15/15",
+      "contract_not_in_corpus": "10/10",
+      "out_of_scope": "5/5"
+    }
+  },
+  "diagnosis_at_k10": {
+    "wrong_abstention": 140,
+    "correct_abstention": 30
+  },
+  "seconds": 15.1
+}

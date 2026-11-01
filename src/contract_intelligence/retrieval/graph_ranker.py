@@ -111,10 +111,17 @@ class GraphRanker:
             profiles[fp] = tokens(" ".join(parts))
         self.router = ContractRouter(profiles)
 
-    def _candidates(self, routed: set[str] | None) -> list[int]:
+    def candidates(self, routed: set[str] | None) -> list[int]:
+        """Chunk positions in the routed contracts, or every chunk when unrouted."""
         if routed is None:
             return list(range(len(self.dense.chunks)))
         return [p for fp in sorted(routed) for p in self.by_file[fp]]
+
+    def route(self, query: str) -> set[str] | None:
+        if not self.config.route_contracts:
+            return None
+        parse = parse_query(query)
+        return self.router.route(parse.contract or query, self.config.route_min_score, self.config.route_keep_ratio)
 
     def rank(self, queries: list[str], k: int) -> list[list[tuple[int, float]]]:
         parsed = [parse_query(q) for q in queries]
@@ -124,11 +131,8 @@ class GraphRanker:
 
         results = []
         for qi, (query, parse) in enumerate(zip(queries, parsed)):
-            routed = None
-            if self.config.route_contracts:
-                routed = self.router.route(parse.contract or query, self.config.route_min_score,
-                                           self.config.route_keep_ratio)
-            candidates = self._candidates(routed)
+            routed = self.route(query)
+            candidates = self.candidates(routed)
             scores = self.vectors[candidates] @ query_vectors[qi]
             score = {}
             for position, s in zip(candidates, scores):

@@ -4,7 +4,14 @@ import faiss
 import networkx as nx
 from fakes import HashingEncoder
 
-from contract_intelligence.config import ChunkingConfig, GraphConfig, PipelineConfig, RetrievalConfig
+from contract_intelligence.config import (
+    ChunkingConfig,
+    GraphConfig,
+    HybridConfig,
+    PipelineConfig,
+    RetrievalConfig,
+)
+from contract_intelligence.retrieval.graph_hybrid_ranker import GraphHybridRanker
 from contract_intelligence.graph.builder import add_document
 from contract_intelligence.indexing.chunking import chunk_document
 from contract_intelligence.indexing.dense_index import DenseIndex
@@ -81,6 +88,23 @@ def test_definition_of_a_term_in_the_question_is_pulled_in() -> None:
     ranker, dense = make_ranker(replace(SMALL, section_title_weight=0.0))
     ranked = ranker.rank(["Consider the Starlight Pictures license; can Licensed Content be streamed?"], k=10)[0]
     assert any('"Licensed Content" means' in dense.chunks[p].text for p, _ in ranked)
+
+
+def test_graph_hybrid_without_global_dense_stays_in_routed_contract() -> None:
+    ranker, dense = make_ranker()
+    hybrid = GraphHybridRanker(ranker.encoder, dense, ranker,
+                               HybridConfig(bm25_query="question", dense_weight=0.0))
+    ranked = hybrid.rank(["Consider the Roanoke Gas franchise with Vinton; when does it expire?"], k=10)[0]
+    assert {dense.chunks[p].file_path for p, _ in ranked} == {"cuad/RoanokeGas-Franchise.txt"}
+    assert "expire" in dense.chunks[ranked[0][0]].text
+
+
+def test_graph_hybrid_global_dense_list_can_add_other_contracts() -> None:
+    ranker, dense = make_ranker()
+    hybrid = GraphHybridRanker(ranker.encoder, dense, ranker, HybridConfig(bm25_query="question"))
+    ranked = hybrid.rank(["Consider the Roanoke Gas franchise with Vinton; governed by the laws of"], k=20)[0]
+    assert len({dense.chunks[p].file_path for p, _ in ranked}) == 2
+    assert dense.chunks[ranked[0][0]].file_path == "cuad/RoanokeGas-Franchise.txt"
 
 
 def test_retriever_uses_graph_ranker_and_keeps_offsets() -> None:

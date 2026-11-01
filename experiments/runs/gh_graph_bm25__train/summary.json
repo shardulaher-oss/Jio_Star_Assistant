@@ -1,0 +1,91 @@
+{
+  "config": "gh_graph_bm25",
+  "split": "train",
+  "n_answerable": 140,
+  "n_unanswerable": 30,
+  "top_k": 10,
+  "abstain_threshold": 0.5214,
+  "retrieval": {
+    "precision": {
+      "1": 0.151,
+      "2": 0.1164,
+      "4": 0.0852,
+      "8": 0.0611,
+      "16": 0.0382,
+      "32": 0.0256,
+      "64": 0.02
+    },
+    "recall": {
+      "1": 0.2402,
+      "2": 0.3492,
+      "4": 0.4978,
+      "8": 0.6474,
+      "16": 0.7945,
+      "32": 0.9036,
+      "64": 0.94
+    },
+    "precision_merged": {
+      "1": 0.151,
+      "2": 0.1164,
+      "4": 0.0852,
+      "8": 0.0611,
+      "16": 0.0382,
+      "32": 0.0256,
+      "64": 0.02
+    },
+    "recall_merged": {
+      "1": 0.2402,
+      "2": 0.3492,
+      "4": 0.4978,
+      "8": 0.6474,
+      "16": 0.7945,
+      "32": 0.9036,
+      "64": 0.94
+    },
+    "doc_hit_rate": {
+      "1": 0.9786,
+      "2": 0.9786,
+      "4": 0.9786,
+      "8": 0.9786,
+      "16": 0.9857,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "mrr": 0.45
+  },
+  "end_to_end": {
+    "precision": {
+      "1": 0.0,
+      "2": 0.0,
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "recall": {
+      "1": 0.0,
+      "2": 0.0,
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    }
+  },
+  "abstention": {
+    "unanswerable_correctly_abstained": 1.0,
+    "answerable_wrongly_abstained": 1.0,
+    "balanced_accuracy": 0.5,
+    "by_unanswerable_category": {
+      "clause_absent_from_indexed_contract": "15/15",
+      "contract_not_in_corpus": "10/10",
+      "out_of_scope": "5/5"
+    }
+  },
+  "diagnosis_at_k10": {
+    "wrong_abstention": 140,
+    "correct_abstention": 30
+  },
+  "seconds": 16.0
+}
