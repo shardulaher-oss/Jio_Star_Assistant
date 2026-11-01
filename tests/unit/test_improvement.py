@@ -25,6 +25,14 @@ def test_diagnose_categories() -> None:
     assert d["false_answer:contract_not_in_corpus"] == 1
 
 
+def test_diagnose_and_bootstrap_accept_json_string_keys() -> None:
+    import json
+
+    rows = [json.loads(json.dumps(q(str(i), 0.5, 1))) for i in range(5)]
+    assert diagnose(rows)["partial_coverage"] == 5
+    assert bootstrap_prob(rows, [q(str(i), 0.5, 1) for i in range(5)])[0] == 0.0
+
+
 def test_proposer_targets_the_biggest_failure_and_skips_tried_rules() -> None:
     diagnosis = {"false_answer:contract_not_in_corpus": 7, "ranked_too_low": 3}
     assert propose(diagnosis, set()).name == "abstain_when_unrouted"

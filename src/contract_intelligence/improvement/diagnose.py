@@ -11,6 +11,11 @@ from collections import Counter
 PRIMARY_K = 5
 
 
+def at_k(values: dict, k: int) -> float:
+    """Metric at k from a per-query dict, whether keys are ints (in memory) or strings (JSON)."""
+    return values[k] if k in values else values[str(k)]
+
+
 def diagnose(per_query: list[dict]) -> dict[str, int]:
     """Failure counts used by the proposer (answerable failures at k = PRIMARY_K)."""
     counts: Counter = Counter()
@@ -23,7 +28,7 @@ def diagnose(per_query: list[dict]) -> dict[str, int]:
         if q["abstained"]:
             counts["false_abstention"] += 1
         rank = q["first_relevant_rank"]
-        recall = q["recall"][PRIMARY_K]
+        recall = at_k(q["recall"], PRIMARY_K)
         top_files = {r[0] for r in q["retrieved_top"][:PRIMARY_K]}
         if not top_files & {g[0] for g in q["gold"]}:
             counts["wrong_document"] += 1

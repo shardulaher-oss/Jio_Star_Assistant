@@ -40,7 +40,7 @@ import yaml
 
 from contract_intelligence.config import PROJECT_ROOT, load_config
 from contract_intelligence.evaluation.runner import apply_threshold, score_queries, summarize
-from contract_intelligence.improvement.diagnose import PRIMARY_K, diagnose
+from contract_intelligence.improvement.diagnose import PRIMARY_K, at_k, diagnose
 from contract_intelligence.improvement.propose import RULES, propose
 from contract_intelligence.retrieval.calibrate import calibrate_from_scores
 from contract_intelligence.retrieval.retriever import Retriever
@@ -119,8 +119,8 @@ def metrics(summary: dict) -> dict:
 
 def bootstrap_prob(current: list[dict], candidate: list[dict], seed: int = 0) -> tuple[float, float]:
     """Mean Recall@k gain and P(gain > 0) under a paired bootstrap over train queries."""
-    base = {q["query"]: q["recall"][PRIMARY_K] for q in current if q["answerable"]}
-    cand = {q["query"]: q["recall"][PRIMARY_K] for q in candidate if q["answerable"]}
+    base = {q["query"]: at_k(q["recall"], PRIMARY_K) for q in current if q["answerable"]}
+    cand = {q["query"]: at_k(q["recall"], PRIMARY_K) for q in candidate if q["answerable"]}
     diff = np.array([cand[q] - base[q] for q in base])
     rng = np.random.default_rng(seed)
     samples = rng.integers(0, len(diff), size=(BOOTSTRAP_SAMPLES, len(diff)))

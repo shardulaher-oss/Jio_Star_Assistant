@@ -1,184 +1,185 @@
 # Contract Intelligence Assistant
 
-This project will implement a measured legal-clause retrieval system over the CUAD subset of LegalBench-RAG. Given a natural-language question, it will return ranked contract passages with their source file and original character offsets, or abstain when no indexed passage is sufficiently relevant. It will expose both a Streamlit web interface and a command-line interface.
+## Overview
 
-The current repository contains the design and implementation blueprint only. The confidential assignment PDF and downloaded benchmark data are intentionally excluded from version control.
+A clause search system for commercial contracts. Given a natural-language question,
+it returns a ranked list of contract passages, each with its source document and
+character offsets into the original file, or returns nothing (and says so) when no
+passage is relevant enough. It is evaluated on the CUAD portion of
+LegalBench-RAG-mini (194 queries, 29 contracts) plus 41 hand-written unanswerable
+queries. It has a Streamlit web app and a CLI, both on the same retrieval backend.
 
-## Blueprint
+Four retrieval architectures are implemented and selectable by configuration:
+traditional dense RAG, Graph RAG, hybrid BM25 + dense RAG with reranking, and
+graph-enhanced hybrid RAG. A train-only improvement loop tunes the chosen pipeline.
+Results and analysis are in [REPORT.md](REPORT.md).
 
-See [`docs/PROJECT_BLUEPRINT.md`](docs/PROJECT_BLUEPRINT.md) for:
+## Setup
 
-- the problem definition and expected behavior;
-- mandatory versus optional scope;
-- retrieval/RAG concepts and the proposed architecture;
-- module responsibilities and dependency direction;
-- risks, assumptions, and the phased delivery roadmap.
-
-## Phase 1 dataset preparation
-
-The preparation command reads the permitted CUAD benchmark, applies the exact
-benchmark `mini()` selector, downloads only the referenced contracts, validates
-all annotated character spans, assigns the exact SHA-256 train/test split, and
-writes reproducible metadata:
+- **Python 3.11** (FAISS and PyTorch wheels are most reliable on 3.11 for Windows).
+- Tested on Windows 11, CPU only, 16 GB RAM. No GPU needed.
 
 ```powershell
-$env:PYTHONPATH = "src"
-.\.venv\Scripts\python.exe -m contract_intelligence.data.prepare
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1          # if blocked: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+$env:PYTHONPATH = "src"               # every command below assumes this (bash: export PYTHONPATH=src)
 ```
 
-Expected dataset statistics:
-
-```text
-query_count: 194
-train_count: 140
-test_count: 54
-referenced_contract_count: 29
-unanswerable_count: 41
-unanswerable_train_count: 30
-unanswerable_test_count: 11
-```
-
-The unanswerable set in `data/queries/unanswerable.json` is hand-written and frozen
-before the improvement loop. It has three categories: clauses that are absent from
-an indexed contract (verified by keyword and synonym search of that contract),
-agreements that are not in the corpus (including near misses that reuse a real
-party or title), and out-of-scope questions that no contract can answer.
-
-The source benchmark and contracts are downloaded under ignored `data/raw/`.
-The selected query files, query manifest, document manifest, and frozen
-unanswerable set are written under tracked `data/processed/` and `data/queries/`.
-
-## Chunking
-
-Pipeline settings live in `configs/*.yaml`. To chunk the corpus and print statistics:
+**Data.** Download the benchmark file, then let the preparation script fetch only the
+29 contracts the selected queries refer to (from the
+[awinml/legalbench-rag](https://huggingface.co/datasets/awinml/legalbench-rag) mirror):
 
 ```powershell
-$env:PYTHONPATH = "src"
-.\.venv\Scripts\python.exe -m contract_intelligence.indexing.chunking --config configs/baseline.yaml
+New-Item -ItemType Directory -Force data/raw/benchmarks
+Invoke-WebRequest https://huggingface.co/datasets/awinml/legalbench-rag/resolve/main/benchmarks/cuad.json -OutFile data/raw/benchmarks/cuad.json
+python -m contract_intelligence.data.prepare
 ```
 
-Chunks are exact slices of the original UTF-8 text (`document[start:end] == chunk.text`),
-trimmed of leading and trailing whitespace. No text is rewritten, so offsets stay valid.
+Expected output: `query_count 194, train_count 140, test_count 54,
+referenced_contract_count 29, unanswerable_count 41 (30 train / 11 test)`. The script
+fails if any annotated span does not match `document[start:end]`.
 
-Two strategies are available through `chunking.strategy`:
+**Models.** Downloaded automatically from Hugging Face on first use:
+`sentence-transformers/all-MiniLM-L6-v2` (embeddings, about 90 MB) and
+`cross-encoder/ms-marco-MiniLM-L6-v2` (reranker, about 90 MB). **No LLM and no API
+keys are used.**
 
-- `fixed`: character windows of `chunk_size` with `chunk_overlap` (the baseline).
-- `sentence`: whole sentences and paragraphs packed up to `chunk_size` characters, so
-  passages never start or end mid-sentence. `chunk_overlap` is the character budget
-  of whole sentences repeated in the next chunk.
-
-Chunking study variants live in `configs/experiments/`. Results are in
-`experiments/chunking_study.md`.
-
-## Embeddings and FAISS index
+## How to run
 
 ```powershell
-$env:PYTHONPATH = "src"
-.\.venv\Scripts\python.exe -m contract_intelligence.indexing.dense_index --config configs/baseline.yaml
-```
-
-The first run downloads the embedding model (about 90 MB) and takes about a minute on CPU.
-Indexes are saved under the git-ignored `artifacts/indexes/<fingerprint>/` (`index.faiss`,
-`chunks.jsonl`, `manifest.json`). The fingerprint covers the corpus hashes, the chunking
-settings and the embedding model, so a matching index is reused and anything else is
-rebuilt. Pass `--rebuild` to force a rebuild.
-
-## Knowledge graph
-
-```powershell
-.\.venv\Scripts\python.exe -m contract_intelligence.graph.builder --config configs/experiments/sentence_800_0.yaml
-```
-
-This builds a NetworkX graph of contracts, sections, clauses (the retrieval chunks),
-definitions, parties, expiry dates, rights, restrictions and IP-ownership statements,
-linked by BELONGS_TO, DEFINES, DEPENDS_ON, REFERENCES, GRANTS_RIGHT, RESTRICTS,
-EXPIRES_ON, OWNED_BY and PARTY_TO edges. Extraction is rule-based (no LLM). Every node
-and edge keeps the character offsets of the text that produced it. The build takes
-about 2 seconds and is saved to the git-ignored `artifacts/graphs/<fingerprint>.json.gz`.
-
-## Retrieval and abstention
-
-`contract_intelligence.retrieval.retriever.Retriever` is the single backend used by the
-CLI, the web app and evaluation. It returns ranked passages (file, start/end offsets,
-cosine score, text), or an empty list with a message when the best score is below
-`retrieval.abstain_threshold`.
-
-To recalibrate the threshold (train queries and train unanswerable queries only):
-
-```powershell
-.\.venv\Scripts\python.exe -m contract_intelligence.retrieval.calibrate --config configs/baseline.yaml
-```
-
-## Architectures
-
-Each architecture is a config selected by `retrieval.pipeline`. All four share the
-corpus, the sentence-aware 800-character chunks, the embedding model and the
-evaluation code.
-
-| Config | Pipeline | What it does |
-|---|---|---|
-| `configs/baseline.yaml` | `dense` | Phase 1 baseline: fixed 500-character chunks, dense FAISS |
-| `configs/traditional_rag.yaml` | `dense` | Dense FAISS on sentence-aware 800-character chunks |
-| `configs/graph_rag.yaml` | `graph` | Route to the named contract via the knowledge graph, rank its clauses by the question, expand along graph edges |
-| `configs/hybrid_rag.yaml` | `hybrid` | BM25 + dense, Reciprocal Rank Fusion, cross-encoder reranking |
-| `configs/graph_hybrid_rag.yaml` | `graph_hybrid` | Graph routing, then graph + routed BM25 + global dense fused with RRF |
-
-Run any of them with `--config`, e.g.
-`python -m contract_intelligence.cli --config configs/graph_rag.yaml query "..."`.
-To print a comparison of saved train runs:
-
-```powershell
-.\.venv\Scripts\python.exe -m contract_intelligence.evaluation.compare traditional_rag graph_rag hybrid_rag graph_hybrid_rag
-.\.venv\Scripts\python.exe -m contract_intelligence.evaluation.benchmark --config configs/graph_rag.yaml
-```
-
-## Interfaces
-
-Both interfaces call the same `Retriever`, so they return identical results for the
-same config.
-
-**Web app (Streamlit):**
-
-```powershell
+# Web app (open http://localhost:8501; choose the config in the sidebar)
 .\.venv\Scripts\streamlit.exe run src/contract_intelligence/web/app.py
+
+# CLI: query (text or --json), build an index, evaluate
+python -m contract_intelligence.cli --config configs/final.yaml query "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; What is the governing law for this contract?"
+python -m contract_intelligence.cli --config configs/final.yaml query "Who owns the IP in derivative works?" --top-k 3 --json
+python -m contract_intelligence.cli --config configs/final.yaml build-index
+python -m contract_intelligence.cli --config configs/final.yaml evaluate --split train
+
+# Improvement loop (train only; resumes from experiments/improvement_log.jsonl)
+python -m contract_intelligence.improvement.loop --iterations 6
+
+# Error analysis, architecture comparison, cost benchmark
+python -m contract_intelligence.evaluation.error_analysis --config configs/graph_hybrid_rag.yaml
+python -m contract_intelligence.evaluation.compare baseline traditional_rag graph_rag hybrid_rag graph_hybrid_rag
+python -m contract_intelligence.evaluation.benchmark --config configs/graph_rag.yaml
+
+# Tests
+pytest
 ```
 
-Open http://localhost:8501. The sidebar selects the config, top-k and abstention
-threshold. Each result shows the source contract, character offsets and cosine score,
-plus an expander that highlights the passage in its surrounding contract text.
+`--config` goes before the CLI subcommand. Test-split evaluation requires
+`--split test --reason "..."` and is logged to `experiments/test_runs.jsonl`.
 
-**CLI:**
+## Architecture
 
-```powershell
-$env:PYTHONPATH = "src"
-.\.venv\Scripts\python.exe -m contract_intelligence.cli query "Who owns the IP in derivative works?"
-.\.venv\Scripts\python.exe -m contract_intelligence.cli query "governing law" --top-k 3 --json
-.\.venv\Scripts\python.exe -m contract_intelligence.cli query "termination for convenience" --no-abstain
-.\.venv\Scripts\python.exe -m contract_intelligence.cli build-index --config configs/baseline.yaml
-.\.venv\Scripts\python.exe -m contract_intelligence.cli evaluate --split train
+```
+data/raw/benchmarks/cuad.json ─► data/prepare.py ─► data/processed/ (194 queries, split, manifests)
+data/raw/corpus/cuad/*.txt ────► data/corpus.py (SHA-256 + length checks)
+                                    │
+                    indexing/segmentation.py + chunking.py   (sentence-aware chunks; offsets kept)
+                     │                 │                     │
+     indexing/dense_index.py   indexing/bm25_index.py   graph/extraction.py + builder.py
+     (MiniLM + FAISS IP)       (Okapi BM25)             (NetworkX graph with provenance)
+                     └─────────────────┼─────────────────────┘
+                     retrieval/{query, graph_ranker, lexical, fusion, reranking,
+                                hybrid_ranker, graph_hybrid_ranker}.py
+                                       │
+                      retrieval/retriever.py (one backend, threshold abstention)
+                     ┌─────────────────┼──────────────────────────┐
+                 cli.py          web/app.py      evaluation/{runner, metrics, diagnostics,
+                                                 error_analysis, compare, benchmark}.py
+                                                          │
+                                         improvement/{diagnose, propose, loop}.py
 ```
 
-`--config` goes before the subcommand, e.g. `cli --config configs/other.yaml query "..."`.
+- **Configuration** lives in `configs/*.yaml` (loaded and validated by `config.py`):
+  chunking, embedding model, retrieval pipeline (`dense | graph | bm25 | hybrid |
+  graph_hybrid`), graph routing and expansion, BM25/RRF/pool/reranker settings, top-k
+  and the abstention threshold. `configs/baseline.yaml` is the Phase 1 baseline,
+  `configs/{traditional,graph,hybrid,graph_hybrid}_rag.yaml` are the four
+  architectures, and `configs/final.yaml` is the configuration frozen by the loop.
+  `configs/experiments/` holds study variants.
+- **Artifacts** (git-ignored, rebuilt automatically): FAISS indexes under
+  `artifacts/indexes/<fingerprint>/`, graphs under `artifacts/graphs/`, and
+  cross-encoder scores cached under `artifacts/cache/`. Fingerprints cover the corpus
+  hashes, chunking and model, so a stale index is never reused.
+- **Results** (tracked): `experiments/runs/<config>__<split>/` (summary and per-query
+  results), `experiments/loop/` (every loop candidate's config and run),
+  `experiments/improvement_log.{jsonl,md}`, `experiments/benchmarks/`, the studies in
+  `experiments/*.md`, and `experiments/test_runs.jsonl`.
 
-## Evaluation
+## Reproducing results
 
-```powershell
-.\.venv\Scripts\python.exe -m contract_intelligence.evaluation.runner --config configs/baseline.yaml --split train
-```
+Times are for a 10-core laptop CPU.
 
-This reports character-level precision and recall at k = 1, 2, 4, 8, 16, 32 and 64
-(mirroring the LegalBench-RAG authors' implementation), abstention in both directions,
-and a per-query failure diagnosis. Results are written to
-`experiments/runs/<config>__<split>/`. The train run takes about 15 seconds once the
-index exists.
+| Step | Command | Time |
+|---|---|---|
+| Prepare data | `python -m contract_intelligence.data.prepare` | 1–2 min (downloads 29 contracts) |
+| Train metrics for each architecture | `python -m contract_intelligence.cli --config configs/<name>.yaml evaluate --split train` | dense / graph: ~1 min including the index build; reranked: 3–6 min first run, seconds once cross-encoder scores are cached |
+| Architecture tables | `python -m contract_intelligence.evaluation.compare baseline traditional_rag graph_rag hybrid_rag graph_hybrid_rag` | seconds |
+| Improvement loop | `python -m contract_intelligence.improvement.loop` (delete `experiments/improvement_log.jsonl` and `experiments/loop/` to start from scratch) | 2–8 min per iteration |
+| Error analysis | `python -m contract_intelligence.evaluation.error_analysis --config configs/graph_hybrid_rag.yaml` | ~10 s |
+| Final test metrics | `python -m contract_intelligence.cli --config configs/final.yaml evaluate --split test --reason "reproduce"` | 1–4 min |
 
-Test runs require `--split test --reason "..."`, and each one is appended to
-`experiments/test_runs.jsonl`, so the number of test runs is recorded.
+Retrieval is deterministic (exact FAISS search, fixed configs, cached reranker scores),
+so the train and test numbers in the report reproduce exactly. Latency figures vary
+with machine load.
 
-## Planned reproducibility contract
+## Assumptions
 
-The implementation must select exactly 194 CUAD queries with the benchmark authors' `mini()` procedure, index only contracts referenced by those queries, preserve UTF-8 character offsets, use the specified SHA-256 split, freeze at least 30 unanswerable questions before optimization, and keep all improvement decisions reproducible from configuration and experiment logs.
+1. **Metric definitions.** Character-level precision and recall follow the
+   LegalBench-RAG authors' code (`QAResult.precision`/`recall` in
+   `zeroentropy-ai/legalbenchrag`): overlaps are summed per retrieved snippet, an empty
+   retrieval scores 0, and queries are averaged with equal weight. Overlapping chunks
+   would count shared characters twice, so merged-span variants are also reported.
+   All final architectures use non-overlapping chunks, where the two are equal.
+2. **Ranking vs. abstention.** P@k/R@k are computed on the ranked list before
+   abstention, which isolates ranking quality and is comparable to the paper.
+   Abstention is reported separately in both directions. End-to-end metrics, where an
+   abstained query scores 0, are also saved.
+3. **Abstention thresholds** are calibrated per configuration on train only (answerable
+   train queries vs. train unanswerable queries), maximising balanced accuracy. Each
+   pipeline's score has its own scale (cosine, graph score, cross-encoder logit), so
+   thresholds are never shared, and no score is treated as a probability.
+4. **Unanswerable set.** The initial repository contained 30 copies of one templated
+   question. It was replaced with 41 varied, hand-verified queries in three categories
+   (clause absent from an indexed contract, agreement not in the corpus, out of scope)
+   **before** the improvement loop, in commit `ac3b8b4`, and has not been edited
+   since. The Glu Mobile "Amendment No. 3" has no governing-law clause (that clause
+   is in the unindexed original agreement), so "what is the governing law?" for it is
+   labelled unanswerable.
+5. **Corpus.** As the benchmark authors did, the index holds the 29 contracts that the
+   194 selected queries refer to, including those referenced only by test queries.
+   Their text is indexed, but test queries and labels are never used for tuning.
+6. **Queries name their contract.** Benchmark queries start with "Consider the
+   <agreement> between <parties>; …". The graph pipelines use this to route to a
+   contract. Free-form questions that name no agreement fall back to searching every
+   contract.
+7. **Text handling.** Files are read with `read_text(encoding="utf-8")` (default
+   newline translation), which is what the benchmark offsets assume; all 194 spans
+   were verified. Chunk text is never modified, so offsets always point into the
+   original file. Whitespace is collapsed only on the copy sent to the models.
+8. **Test usage.** Test is evaluated once, for the final frozen configuration. Every
+   test run is logged with a reason in `experiments/test_runs.jsonl`.
+9. **No LLM.** Retrieval quality is driven by routing and reranking. Rule-based
+   extraction and proposals are deterministic and keep contract text on the machine.
+   See REPORT.md for the reasoning.
+10. **Primary metric.** Recall@5 was chosen for the improvement loop (a reviewer reads
+    about five passages), with precision@5 and abstention as guardrails. See REPORT.md.
+
+## AI tool usage
+
+Claude Code (Anthropic, Claude Opus 5.5) was used as a pair programmer throughout:
+to analyse the brief, design the architecture, write the modules and tests, run the
+experiments and benchmarks, and draft the documentation. Every design decision,
+experiment result and commit was reviewed before it was committed. The
+experiment logs record what was tried and why, including rejected ideas.
 
 ## Confidentiality
 
-Do not add the assignment PDF, copied assignment text, benchmark secrets, API keys, or confidential contracts to this repository. Any AI-assisted development and all assumptions will be documented in the final README as required by the brief.
+The assignment brief and any text copied from it are not in this repository
+(`*.pdf` is git-ignored). No API keys or confidential contracts are stored; the
+corpus is the public CUAD dataset.
