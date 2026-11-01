@@ -1,0 +1,20 @@
+{
+  "config": "final",
+  "pipeline": "graph_hybrid",
+  "reranker": "cross-encoder/ms-marco-MiniLM-L6-v2",
+  "chunks": 1817,
+  "build": {
+    "dense_index_seconds": 39.93,
+    "graph_seconds": 2.29,
+    "bm25_seconds": 0.12
+  },
+  "startup_seconds": 9.56,
+  "memory_mb_added_by_retriever": 453,
+  "latency_ms": {
+    "n": 50,
+    "median": 5.5,
+    "p95": 13.5,
+    "max": 13.9
+  },
+  "machine": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel, 10 cores, CPU only"
+}

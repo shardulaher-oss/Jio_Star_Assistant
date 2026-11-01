@@ -17,7 +17,7 @@ steps are in the [README](../README.md) and results are in [REPORT.md](../REPORT
 | Keyword retrieval | `indexing/bm25_index.py`, `retrieval/lexical.py` | Okapi BM25 over the same chunks |
 | Graph retrieval | `retrieval/graph_ranker.py`, `retrieval/query.py` | Contract routing, question-only scoring, edge expansion |
 | Hybrid retrieval | `retrieval/fusion.py`, `retrieval/hybrid_ranker.py`, `retrieval/graph_hybrid_ranker.py` | Weighted Reciprocal Rank Fusion |
-| Reranking | `retrieval/reranking.py` | Cross-encoder, scores cached on disk |
+| Reranking | `retrieval/reranking.py` | Cross-encoder at chunk or sentence granularity (`hybrid.rerank_granularity`), scores cached on disk |
 | Abstention and input validation | `retrieval/abstention.py` | Query cleaning and limits; threshold rule |
 | Retrieval service | `retrieval/retriever.py` | The one backend used by the CLI, the app and evaluation |
 | Answer generation (optional) | `answering/generator.py` | Gemini structured answer with a verified, offset-mapped quote; cached |
@@ -39,8 +39,8 @@ question ─► abstention.clean_query (reject empty / > 2,000 characters)
          ─► GraphRanker.route (party/alias IDF match ⟶ contract set, or all contracts)
          ─► graph ranking (question-only cosine + title boost + expansion) ┐
          ─► BM25 on the question, restricted to the routed contracts       ┴► RRF (k = 60)
-         ─► cross-encoder rerank of the top 40 (cached)
-         ─► abstention.decide (top-1 logit < −5.6523 ⟶ empty result with a reason)
+         ─► cross-encoder rerank of the top 40: max(chunk score, best sentence score) (cached)
+         ─► abstention.decide (top-1 score < −4.6098 ⟶ empty result with a reason)
          ─► [optional] AnswerGenerator: top 5 passages ⟶ Gemini JSON ⟶ quote verified ⟶ offsets
 ```
 
@@ -59,7 +59,7 @@ is loaded by the test suite.
 | `index` / `graph.output_root` | Artifact locations (git-ignored) |
 | `retrieval` | `pipeline`, `top_k`, `abstain_threshold` (on that pipeline's score scale; calibrated on train) |
 | `graph` | `route_contracts`, `route_min_score`, `route_keep_ratio`, `question_only`, `section_title_weight`, `expand_top`, `expansion_decay`, `abstain_when_unrouted` |
-| `hybrid` | `bm25_k1`, `bm25_b`, query mode per stage (`full`/`question`), pool sizes, `rrf_k`, list weights (0 disables a list), `reranker_model` (`""` = none), `rerank_pool`, `rerank_batch_size` |
+| `hybrid` | `bm25_k1`, `bm25_b`, query mode per stage (`full`/`question`), pool sizes, `rrf_k`, list weights (0 disables a list), `reranker_model` (`""` = none), `rerank_pool`, `rerank_batch_size`, `rerank_granularity` (`chunk` / `sentence_max`) |
 | `answer` | `provider` (`gemini`), `model`, `max_passages`, `temperature`, `timeout_seconds`, `cache_path`, **`allow_external`** |
 
 Named configurations:
@@ -79,7 +79,7 @@ Named configurations:
 | Embedding cache | Passage vectors are cached by the persistent index. Query vectors use a bounded LRU (4,096) with one batched encode for the uncached queries; results are identical with and without it. |
 | Batch work | Passages are embedded in batches of 64. The cross-encoder scores the whole rerank pool in batches (8 on a 16 GB laptop; 32 when memory allows). Evaluation retrieves all queries of a split in one batch. |
 | Avoiding recomputation | Cross-encoder scores are cached per (model, query, passage) in `artifacts/cache/`; LLM answers per (model, prompt) in `experiments/llm_cache/` (committed). BM25 rebuilds at startup in under 0.1 s, so it is not persisted. |
-| Latency (CPU) | Traditional 7.8 ms, Graph 5.7 ms, Hybrid 888 ms, final 571 ms median per new query; the cross-encoder dominates. Gemini adds about 1.4 s per uncached answer. |
+| Latency (CPU) | Median per new query: Traditional 7.8 ms, Graph 5.7 ms, Hybrid 888 ms, final v1 559 ms, **final v2 1,708 ms** (sentence-level reranking scores every sentence of 40 candidates). Repeated queries hit the score cache and take milliseconds. Gemini adds about 1.5 s per uncached answer. |
 | Memory | About 350 MB for the dense retriever, 540 MB for the final pipeline (two small transformers). |
 | Startup | 5–10 s (model loading). The app caches the retriever per config with `st.cache_resource`. |
 
@@ -159,7 +159,7 @@ combines ranks precisely to avoid rescaling.
 | No FastAPI layer | The CLI and the Streamlit app share the `Retriever` in-process, and no external client needs an HTTP API. A service would add deployment, auth and serialization work without improving the demo or the evaluation. If one is needed later, it is a thin wrapper around `Retriever.search` and `AnswerGenerator.answer`. |
 | No microservices, vector database or Neo4j | 1,817 chunks and about 4,000 graph nodes fit in memory; exact FAISS search takes about 1 ms. |
 | Rule-based graph and loop proposals | Deterministic, reviewable, with provenance; no contract text leaves the machine. |
-| LLM only for answer phrasing, never for retrieval decisions | The answer must quote a retrieved passage verbatim. Using the LLM's "not found" to abstain would raise false abstention from 15% to 32% on train, so passages always stay visible. |
+| LLM only for answer phrasing, never for retrieval decisions | The answer must quote a retrieved passage verbatim. Using the LLM's "not found" to abstain would raise false abstention from 11% to 25% on train (v2), so passages always stay visible. |
 | `gemini-3.1-flash-lite` | `gemini-2.5-flash` is closed to new keys and `gemini-3.8-flash` timed out in testing (November 2026). Flash-lite is stable, fast and sufficient for extraction. The model is configurable. |
 
 ## 7. Operations
@@ -189,6 +189,6 @@ pytest                       # 171 unit + 7 integration tests (~20 s); pytest -m
   contract, and misspelled party names (e.g. "PCQ" vs "PC Quote") defeat routing.
 - The LLM answer quotes one passage and can miss qualifications elsewhere (e.g. a
   term that expires in 2006 but continues for some properties until 2008). Gemini
-  said "not found" for 45 of 140 answerable train queries.
+  said "not found" for 35 of 140 answerable train queries (v2).
 - No authentication, multi-tenancy or document upload; single-process, CPU-only.
 - Graph extraction is heuristic: 319 of 903 cross-references are unresolved.

@@ -1,0 +1,49 @@
+{
+  "config": "final",
+  "split": "train",
+  "model": "gemini-3.1-flash-lite",
+  "n_answerable": 140,
+  "n_unanswerable": 30,
+  "llm_calls": 133,
+  "uncached_calls_this_run": 125,
+  "span_metrics": {
+    "llm_evidence_precision": 0.6203,
+    "llm_evidence_recall": 0.4225,
+    "retrieval_p@1": 0.2158,
+    "retrieval_r@1": 0.429,
+    "retrieval_p@5": 0.0822,
+    "retrieval_r@5": 0.6367,
+    "evidence_overlaps_gold": 0.6214
+  },
+  "answer_types_answerable": {
+    "value": 34,
+    "yes": 35,
+    "not_found": 35,
+    "clause": 26,
+    "no": 10
+  },
+  "answer_types_unanswerable": {
+    "not_found": 28,
+    "value": 2
+  },
+  "grounded_rate_of_answers": 0.9626,
+  "abstention_retrieval_only": {
+    "correct_abstention": 0.7333,
+    "false_abstention": 0.1071,
+    "balanced_accuracy": 0.8131
+  },
+  "abstention_retrieval_plus_llm": {
+    "correct_abstention": 0.9333,
+    "false_abstention": 0.25,
+    "balanced_accuracy": 0.8417
+  },
+  "latency_ms_uncached": {
+    "median": 1484.0,
+    "max": 42289.3
+  },
+  "tokens_per_call": {
+    "input_mean": 1157,
+    "output_mean": 125
+  },
+  "seconds": 439.4
+}

@@ -4,22 +4,33 @@
 
 I built a clause search system over the 29 CUAD contracts in LegalBench-RAG-mini. It
 returns ranked passages with exact character offsets, or nothing when no passage is
-relevant enough. The final pipeline (`configs/final.yaml`) works in three stages:
+relevant enough. The final pipeline (`configs/final.yaml`, v2) works in three stages:
 
 1. Identify the contract the question names, using a knowledge graph of parties and
-   defined aliases.
+   defined aliases (or the contract the user picks in the app).
 2. Rank that contract's clauses by fusing a question-only embedding ranking with BM25.
-3. Rerank the top 40 with a cross-encoder, then abstain if the best score is below
-   a threshold calibrated on train.
+3. Rerank the top 40 with a cross-encoder that scores **each chunk and each of its
+   sentences**, keeping the best score. Then abstain if that score is below a
+   threshold calibrated on train.
 
-**On the held-out test split (54 answerable queries, evaluated once):**
-- Recall@5 is **0.684** (95% CI 0.56–0.80) against **0.087** for the Phase 1
-  baseline. Precision@5 is 0.098, recall@1 0.394 and MRR 0.602.
-- On the 11 test unanswerable queries it correctly returns nothing for 54.5%. It
-  wrongly returns nothing for 7.4% of answerable test queries.
+**On the held-out test split (54 answerable + 11 unanswerable queries):**
+- Recall@5 is **0.626** (95% CI 0.50–0.75) against **0.087** for the Phase 1
+  baseline. Precision@5 is 0.093, recall@1 0.351 and MRR 0.559.
+- It correctly returns nothing for **72.7%** of unanswerable test queries (4 of 5
+  absent clauses caught). It wrongly returns nothing for 7.4% of answerable ones
+  (balanced abstention accuracy 0.827).
 
-Train and test ranking metrics agree within noise (train recall@5 0.660). Abstention
-is the weak part: it caught 15/15 absent-clause train queries but only 2/5 on test.
+**Two final configurations were frozen and tested, one after the other**, both
+selected on train:
+- **v1** (`configs/graph_hybrid_rag.yaml`): test R@5 0.684, correct abstention 54.5%.
+- **v2:** added sentence-level reranking. The loop accepted it on train (R@1
+  0.367 → 0.443, balanced abstention 0.775 → 0.813, false abstention 15% → 11%).
+  On test, ranking did not measurably change (paired difference in R@5 −0.058,
+  95% CI −0.14 to +0.02; 45 of 54 queries identical), while abstention clearly
+  improved.
+
+v2 is the final system because it was chosen on train; test was not used to choose
+between them. Test was evaluated 3 times in total (v1, baseline, v2), all logged.
 
 ## System design
 
@@ -37,7 +48,7 @@ every returned offset points into the original file.
 | Contract identification | Route via graph party/alias nodes, file name and opening clause (IDF overlap) | None (search all) | The query prefix "Consider the <agreement> between <parties>" dominates the embedding. Dense search finds the right contract at rank 1 for 99% of queries, but ranks its title page first for 74/140. Routing + question-only scoring: R@8 0.374 → 0.659 (`experiments/graph_rag_study.md`) |
 | Lexical signal | BM25 on the question, **restricted to the routed contract** | BM25 over the whole corpus (full query / question) | Unrestricted BM25 matched party names and pulled in preamble chunks: hybrid R@8 0.287 vs 0.374 dense |
 | Fusion | Reciprocal Rank Fusion (k = 60) | Score averaging (not tried: BM25 and cosine scales differ) | RRF needs no score calibration |
-| Reranker | `ms-marco-MiniLM-L6-v2` on the top 40 routed candidates, question only | No reranker; full-query reranking; adding global dense candidates; L12 model | Reranking inside the routed contract: R@1 0.240 → 0.367. With global candidates it **hurt** (R@8 0.543), because it promotes clauses from other contracts |
+| Reranker | `ms-marco-MiniLM-L6-v2` on the top 40 routed candidates, question only, **sentence-level** (max of chunk and sentence scores) | No reranker; full-query reranking; adding global dense candidates; MiniLM-L12; mxbai-rerank-xsmall | Reranking inside the routed contract: R@1 0.240 → 0.367. With global candidates it **hurt** (R@8 0.543), because it promotes clauses from other contracts. Sentence-level scoring: R@1 0.367 → 0.443 and false abstention 15% → 11%, because a one-sentence answer is no longer diluted by boilerplate. mxbai: R@5 0.718, but rejected by the false-abstention guardrail (21%) |
 | Abstention | Threshold on the top-1 score of each pipeline, calibrated on train by balanced accuracy | Shared threshold; "abstain if the named contract is unknown" | Score scales differ per pipeline (cosine, graph score, logit), so no threshold transfers. None is a probability |
 | Graph store | NetworkX MultiDiGraph, gzipped JSON (224 KB) | Neo4j | 3,920 nodes and 9,608 edges fit in memory and build in 1.5 s; a server adds nothing at this scale |
 
@@ -60,7 +71,12 @@ rejected them again later.
 | Traditional RAG (dense) | 0.044 | 0.060 | 0.046 | 0.293 | 0.442 | 0.209 | 0.713 | 7.8 ms | 346 MB |
 | Graph RAG | 0.139 | 0.225 | 0.077 | 0.546 | 0.678 | 0.428 | 0.693 | **5.7 ms** | 441 MB |
 | Hybrid RAG (BM25 + dense + reranker) | 0.071 | 0.077 | 0.045 | 0.282 | 0.411 | 0.221 | 0.623 | 888 ms | 449 MB |
-| **Graph-Hybrid RAG** (= final) | **0.202** | **0.367** | **0.088** | **0.660** | **0.749** | **0.574** | **0.775** | 571 ms | 542 MB |
+| **Graph-Hybrid RAG** (= final v1) | **0.202** | **0.367** | **0.088** | **0.660** | **0.749** | **0.574** | **0.775** | 571 ms | 542 MB |
+| + sentence-level reranking (= final v2) | 0.225 | 0.443 | 0.088 | 0.674 | 0.763 | 0.622 | 0.813 | 1,708 ms* | ~540 MB |
+
+\* Latency for new queries with the cross-encoder cache disabled. v1 measured the
+same way takes 559 ms; v2 is about 3× slower because it also scores every sentence of
+the 40 candidates. Repeated queries hit the score cache and take milliseconds.
 
 Index build is about 40 s for all four (embedding 1,817 chunks on CPU), plus 1.5 s for
 the graph. Cost details and per-query complexity are in
@@ -90,24 +106,25 @@ text, type, cited passages, a **verbatim quote** and a confidence level.
 - **Model choice:** `gemini-2.5-flash` is closed to new keys, and `gemini-3.8-flash`
   timed out in testing.
 
-**Does it help? Train only, 140 answerable + 30 unanswerable queries, 128 model
-calls** (`experiments/runs/final_llm__train/`):
+**Does it help? Train only, 140 answerable + 30 unanswerable queries, 133 model calls
+on final v2** (`experiments/runs/final_llm__train/`; the v1 run is in
+`final_v1_llm__train/` and gave the same picture):
 
 | Measure | Retrieval only | + Gemini answer |
 |---|---|---|
-| Evidence precision (characters) | 0.190 (top-1 passage) | **0.585** (quote) |
-| Evidence recall (characters) | 0.343 (top-1 passage) | 0.384 (quote) |
-| Quotes found verbatim in a passage | – | 99% |
-| Correct abstention / false abstention | 70% / 15% | 93% / **32%** if "not found" also abstains |
-| Cost per query | ~0.6 s, local | + median 1.4 s, ~1,100 input / 126 output tokens, external API |
+| Evidence precision (characters) | 0.216 (top-1 passage) | **0.620** (quote) |
+| Evidence recall (characters) | 0.429 (top-1 passage) | 0.423 (quote) |
+| Quotes found verbatim in a passage | – | 96% |
+| Correct abstention / false abstention | 73% / 11% | 93% / **25%** if "not found" also abstains |
+| Cost per query | ~1.7 s new / ms cached, local | + median 1.5 s, ~1,150 input / 125 output tokens, external API |
 
 These are end-to-end figures, where abstained queries score 0.
 
-- **The quote is about 3× more precise** than the best passage at slightly higher
-  recall. For a reviewer, that is the difference between reading one sentence and
+- **The quote is about 3× more precise** than the best passage (0.62 vs 0.22) at
+  the same recall. For a reviewer, that is the difference between reading one sentence and
   reading 700 characters.
 - **The LLM's "not found" is not a usable abstention signal.** It said "not found"
-  for 45 of 140 answerable queries; using it to abstain would break the 20%
+  for 35 of 140 answerable queries (v2; 45 for v1); using it to abstain would break the 20%
   false-abstention guardrail. So the answer is shown **above** the retrieved
   passages, which always stay visible.
 - **Its quote can miss qualifications elsewhere in the clause** (e.g. a term that
@@ -150,10 +167,15 @@ Where an LLM could still help, as future work measured against this baseline:
     before any tuning and never edited.
 - **Splits.** All development, ablations, threshold calibration and loop decisions
   used train only. The loop code refuses test runs.
-- **Test runs: 2, one per configuration**, both after `configs/final.yaml` was frozen
-  in commit `4c7b377`: the final config, and the Phase 1 baseline for the
-  baseline-vs-final table. Both are logged in `experiments/test_runs.jsonl`. No test
-  result was used to change anything.
+- **Test runs: 3, one per configuration**, each made only after that configuration was
+  frozen in git, and each logged in `experiments/test_runs.jsonl`:
+  1. final v1 (commit `4c7b377`);
+  2. the Phase 1 baseline, for the baseline-vs-final table;
+  3. final v2 (commit `dab43dc`), after later train-only work (sentence-level
+     reranking) produced a new configuration.
+
+  No test result was used to choose or change a configuration. In particular, v2's
+  lower test recall did not lead back to v1.
 - Confidence intervals are 95% bootstrap intervals over queries (5,000 resamples).
 
 ## Results
@@ -163,45 +185,56 @@ Where an LLM could still help, as future work measured against this baseline:
 | Config | Split | n (ans. / unans.) | P@1 | R@1 | P@3 | R@3 | P@5 | R@5 | P@10 | R@10 | MRR |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Baseline | train | 140 / 30 | 0.046 | 0.026 | 0.051 | 0.147 | 0.051 | 0.231 | 0.034 | 0.308 | 0.198 |
-| **Final** | train | 140 / 30 | 0.202 | 0.367 | 0.135 | 0.600 | 0.088 | 0.660 | 0.052 | 0.749 | 0.574 |
+| Final v1 | train | 140 / 30 | 0.202 | 0.367 | 0.135 | 0.600 | 0.088 | 0.660 | 0.052 | 0.749 | 0.574 |
+| **Final v2** | train | 140 / 30 | 0.225 | 0.443 | 0.126 | 0.625 | 0.088 | 0.674 | 0.053 | 0.763 | 0.622 |
 | Baseline | test | 54 / 11 | 0.018 | 0.006 | 0.022 | 0.064 | 0.019 | 0.087 | 0.023 | 0.198 | 0.122 |
-| **Final** | **test** | 54 / 11 | **0.200** | **0.394** | **0.132** | **0.604** | **0.098** | **0.684** | **0.060** | **0.769** | **0.602** |
+| Final v1 | test | 54 / 11 | 0.200 | 0.394 | 0.132 | 0.604 | 0.098 | 0.684 | 0.060 | 0.769 | 0.602 |
+| **Final v2** | **test** | 54 / 11 | **0.181** | **0.351** | **0.123** | **0.534** | **0.093** | **0.626** | **0.058** | **0.765** | **0.559** |
 
 | Config | Split | Correct abstention | Results returned for unanswerable | False abstention | Balanced acc. | Absent clause / not in corpus / out of scope abstained |
 |---|---|---|---|---|---|---|
 | Baseline | train | 50.0% | 50.0% | 7.9% | 0.711 | 2/15, 8/10, 5/5 |
-| Final | train | 70.0% | 30.0% | 15.0% | 0.775 | 15/15, 3/10, 3/5 |
+| Final v1 | train | 70.0% | 30.0% | 15.0% | 0.775 | 15/15, 3/10, 3/5 |
+| **Final v2** | train | 73.3% | 26.7% | 10.7% | 0.813 | 15/15, 4/10, 3/5 |
 | Baseline | test | 54.5% | 45.5% | 11.1% | 0.717 | 1/5, 2/3, 3/3 |
-| **Final** | **test** | **54.5%** | **45.5%** | **7.4%** | **0.736** | 2/5, 2/3, 2/3 |
+| Final v1 | test | 54.5% | 45.5% | 7.4% | 0.736 | 2/5, 2/3, 2/3 |
+| **Final v2** | **test** | **72.7%** | **27.3%** | **7.4%** | **0.827** | 4/5, 1/3, 3/3 |
 
-95% bootstrap intervals for the final config:
+95% bootstrap intervals for final v2:
 
 | Metric | Train | Test |
 |---|---|---|
-| R@5 | 0.660 [0.59, 0.73] | 0.684 [0.56, 0.80] |
-| P@5 | 0.088 [0.07, 0.10] | 0.098 [0.07, 0.13] |
-| R@1 | 0.367 [0.30, 0.44] | 0.394 [0.27, 0.52] |
-| Correct abstention | 0.70 [0.53, 0.87] | 0.55 [0.27, 0.82] |
-| False abstention | 0.15 [0.09, 0.21] | 0.07 [0.02, 0.15] |
+| R@5 | 0.674 [0.60, 0.75] | 0.626 [0.50, 0.75] |
+| P@5 | 0.088 [0.07, 0.10] | 0.093 [0.06, 0.13] |
+| R@1 | 0.443 [0.36, 0.52] | 0.351 [0.24, 0.47] |
+| Correct abstention | 0.73 [0.57, 0.87] | 0.73 [0.45, 1.00] |
+| False abstention | 0.11 [0.06, 0.16] | 0.07 [0.02, 0.15] |
 
 **Train–test gap.**
-- **Ranking generalises.** Test R@5 is slightly *higher* than train (0.684 vs 0.660),
-  well inside both intervals. The final pipeline has few tuned numbers (routing
-  thresholds, pool sizes), and the loop rejected every tuned change, so there was
-  little room to overfit ranking to train.
-- **Abstention does not clearly generalise.** Correct abstention fell from 70% to
-  55%, and absent-clause catches from 15/15 to 2/5. With 11 test negatives the
-  interval is very wide (27–82%), so this is weak evidence either way. Still, the
-  threshold was fitted on only 30 train negatives, and the absent-clause cases
-  depend on a fine score margin. I treat abstention as **not validated**.
+- **Ranking: v2 is within noise of train.** Test R@5 is 0.626 against 0.674 on
+  train, and the intervals overlap widely.
+  - Against v1 on the same test queries, the paired differences are R@1 −0.043
+    [−0.12, +0.02], R@5 −0.058 [−0.14, +0.02] and R@10 −0.004.
+  - 45 of 54 queries are unchanged; 6 got worse and 3 better.
+  - In three of the six regressions the gold clause drops out of the top 5 (rank
+    3 → 6, 2 → 6, 5 → 9). It is overtaken by chunks whose single best sentence
+    scored higher, the flip side of sentence-level scoring. The other three slip by
+    one or two places within the top 5.
+  - The train gain in R@1 (+0.08) did not reproduce on test. With n = 54, such a
+    difference is not resolvable.
+- **Abstention generalises better with v2.** Correct abstention is 73% on both train
+  and test, absent-clause catches rose from 2/5 (v1) to 4/5, and false abstention
+  stays at 7%. This is the improvement sentence-level scoring was designed for: the
+  relevance score now reflects the best-matching sentence, so "no sentence in this
+  contract addresses the question" is easier to detect. With 11 test negatives, the
+  interval is still wide (45–100%).
 - **Precision is low by construction.** A gold span has a median of about 315
   characters (mean 395) and a chunk averages about 660, so even a perfect top-1 chunk
-  scores P@1 ≈ 0.5–0.6. Recall at a
-  small k is the more meaningful figure for a reviewer.
+  scores P@1 ≈ 0.5–0.6.
 - **The baseline's test scores are much lower than its train scores** (R@5 0.087 vs
-  0.231). Its failure mode (ranking the title page first) varies by contract, and
-  the 54 test queries cover 21 of the 29 contracts. This is one reason the test set
-  alone is a noisy comparison.
+  0.231). Its failure mode (ranking the title page first) varies by contract, and the
+  54 test queries cover 21 of the 29 contracts. This is one reason the test set alone
+  is a noisy comparison.
 
 ## Iteration history
 
@@ -245,7 +278,7 @@ evaluated on train; full tables in `experiments/*_study.md`):
 | Hybrid | BM25 + dense + RRF (± reranker, 6 variants) | ≤ 0.364 | 0.282 | no (worse than dense) |
 | Graph-Hybrid | routing + routed BM25 + reranker (4 variants) | 0.727 | 0.660 | yes → loop start |
 
-**Automated loop** (11 iterations after the start, all proposed by `improvement/propose.py`):
+**Automated loop** (14 iterations after the start, all proposed by `improvement/propose.py`; iterations 13–15 come from a second run, after three reranking rules were added from the error analysis):
 
 | # | Change | R@1 | R@5 | P@5 | Bal. abst. | False abst. | ΔR@5 | P(gain>0) | Decision |
 |---|---|---|---|---|---|---|---|---|---|
@@ -262,6 +295,9 @@ evaluated on train; full tables in `experiments/*_study.md`):
 | 10 | chunk size 1000 | 0.389 | 0.678 | 0.074 | 0.787 | 9.3% | +0.018 | 0.73 | rejected (P@5 guardrail) |
 | 11 | abstain when named contract unknown | 0.367 | 0.660 | 0.088 | 0.781 | 17.1% | +0.000 | 0.00 | rejected (abstention +0.006 < 0.02) |
 | 12 | graph and BM25 pools 50 → 100 | 0.367 | 0.660 | 0.088 | 0.775 | 15.0% | +0.000 | 0.00 | rejected |
+| 13 | **sentence-level reranking** | 0.443 | 0.674 | 0.088 | 0.813 | 10.7% | +0.014 | 0.76 | **accepted (B: abstention +0.038)** → final v2 |
+| 14 | + cross-encoder L12 (on 13) | 0.446 | 0.681 | 0.087 | 0.792 | 15.0% | +0.007 | 0.68 | rejected (abstention −0.021) |
+| 15 | + mxbai-rerank-xsmall (on 13) | 0.490 | 0.718 | 0.098 | 0.760 | 21.4% | +0.044 | 0.92 | rejected (false abstention > 20%) |
 
 **What the loop taught.**
 1. **Upstream changes no longer matter.** The routed contract has about 60 chunks and
@@ -272,30 +308,48 @@ evaluated on train; full tables in `experiments/*_study.md`):
    R@1 0.367 → 0.406, false abstention 15% → 11%) missed the 0.90 bootstrap bar.
    Chunk size 1000 traded 0.014 of P@5 for R@5. Both look promising, but not
    provable on 140 queries, so they stay out.
-3. **Abstaining on an unknown contract** caught one more not-in-corpus query (Echo
+3. **Sentence-level scoring was the one change the error analysis called for, and
+   it was accepted.** The HPIL anti-assignment query, whose top chunk contained the
+   answer but scored −6.35 against a −5.65 threshold, now scores −3.71 and is
+   answered. Train false abstention fell from 15% to 11%.
+4. **The best ranker was rejected, and the rejection stands.** mxbai-rerank-xsmall
+   reached R@5 0.718 and R@1 0.490 (bootstrap P = 0.92), but its calibrated
+   threshold refused 21.4% of answerable queries, over the 20% guardrail declared
+   before the loop. Relaxing the guardrail after seeing the result would defeat its
+   purpose, so it remains the most promising next experiment, ideally with a
+   per-question-type threshold. It is also three times slower than MiniLM-L6.
+5. **Abstaining on an unknown contract** caught one more not-in-corpus query (Echo
    Valley) but also rejected the three answerable PC Quote queries whose routing
    misses (false abstention 15% → 17%). Routing is not
    reliable enough to be an abstention signal on its own (see failure A1 below).
 
 ## Error analysis
 
-Fourteen concrete train failures of the final configuration, grouped by cause. Labels,
-counts and excerpts are generated by `python -m contract_intelligence.evaluation.error_analysis`
-(`experiments/error_analysis.md`). Counts over 140 answerable and 30 unanswerable
-train queries at k = 5:
+Fourteen concrete train failures, grouped by cause. They were diagnosed on final v1;
+their status under v2 is noted. Labels, counts and excerpts are generated by
+`python -m contract_intelligence.evaluation.error_analysis` (`experiments/error_analysis.md`,
+now regenerated for v2). Counts over 140 answerable and 30 unanswerable train queries
+at k = 5:
 
-| Category | Queries |
-|---|---|
-| Ranked too low (gold at rank 6–64) | 33 |
-| Semantic mismatch | 21 |
-| Incorrect abstention | 21 |
-| Incomplete span | 20 |
-| Cross-reference involved | 11 |
-| Unanswerable retrieved | 9 |
-| Definition not retrieved | 7 |
-| Chunk boundary | 5 |
-| Wrong document | 3 |
-| Wrong section | 3 |
+| Category | v1 | v2 |
+|---|---|---|
+| Ranked too low (gold at rank 6–64) | 33 | 32 |
+| Semantic mismatch | 21 | 22 |
+| Incorrect abstention | 21 | **15** |
+| Incomplete span | 20 | 20 |
+| Cross-reference involved | 11 | 13 |
+| Unanswerable retrieved | 9 | 8 |
+| Definition not retrieved | 7 | 8 |
+| Chunk boundary | 5 | 6 |
+| Wrong document | 3 | 2 |
+| Wrong section | 3 | 3 |
+
+**Status under v2:**
+- **Fixed:** case 10 (HPIL anti-assignment), the motivating example for
+  sentence-level scoring.
+- **Worse:** case 8 (Vitamin Shoppe expiration), where the gold chunk fell from rank
+  4 to 6.
+- **Unchanged:** the other twelve cases.
 
 **A. Routing failures (wrong document)**
 
@@ -370,7 +424,8 @@ train queries at k = 5:
     successors-and-assigns boilerplate, so the relevant sentence is diluted. One
     global threshold cannot separate this from true negatives. **Fix:** score at the
     sentence level (the maximum over sentences in the chunk), or calibrate
-    thresholds per question type.
+    thresholds per question type. **Fixed in v2** by sentence-level scoring: logit
+    −3.71, answered.
 11. *BicycleTX ROFR* (case 4) abstains for a related reason: no clause matches the
     question's vocabulary, so the best score is low.
 
@@ -390,8 +445,9 @@ train queries at k = 5:
     (abstain when the named contract is unknown) targets exactly this, but it also
     rejected the three answerable PC Quote queries whose routing misses (case 1).
     **Fix:** better routing first, then abstain on routing failure.
-14. *Absent clauses on test (3 of 5 answered).* The fixed threshold that caught all
-    15 absent-clause train queries let three test ones through. **Diagnosis:** the
+14. *Absent clauses on test (v1: 3 of 5 answered; v2: 1 of 5).* The v1 threshold,
+    which caught all 15 absent-clause train queries, let three test ones through.
+    Sentence-level scoring (v2) reduced this to one. **Diagnosis:** the
     margin between "clause about something nearby" and "clause that answers" is
     small, and the threshold was fitted on 30 negatives. **Fix:** a larger,
     stratified unanswerable set for calibration, and a relevance classifier trained
@@ -400,21 +456,23 @@ train queries at k = 5:
 ## Limitations and next steps
 
 **What doesn't work yet**
-- **Abstention is not validated.** Test correct-abstention is 54.5% with a 27–82%
-  interval, and absent clauses are caught inconsistently. A legal user cannot yet
-  treat "no answer found" as "the contract has no such clause".
+- **Abstention is better but not validated.** v2's test correct abstention is 72.7%,
+  but with 11 negatives the interval is 45–100%. Agreements missing from the corpus
+  are still caught only 1–4 times in 10 (routing falls back to the whole corpus). A
+  legal user cannot yet treat "no answer found" as "the contract has no such clause".
 - **Routing depends on the query naming the contract.** Benchmark queries always do.
   Free-form questions ("Does this agreement allow sublicensing?") search all 29
-  contracts, where the title-page problem returns. A real interface should select
-  the contract explicitly (a dropdown or document upload), which is also the safer
-  UX.
+  contracts, where the title-page problem returns. The web app now has an explicit
+  contract picker that restricts the search to one agreement; production use should
+  make that the default.
 - **Single-span gold labels understate the system** when a contract has several
   valid clauses (case 6). Precision is capped by chunk length: a perfect chunk scores
   about 0.5.
 - **Small samples.** 54 test queries and 11 test negatives give wide intervals.
   Differences under about 0.05 R@5 between configurations are not meaningful here.
-- **Cost.** About 0.6 s per query on CPU because of the cross-encoder, and +200 MB of
-  memory. The reranker crashed with out-of-memory errors on this 16 GB laptop until
+- **Cost.** About 1.7 s per new query on CPU for v2 (0.56 s for v1), because the
+  cross-encoder scores every sentence of 40 candidates, and +200 MB of memory. A GPU,
+  or scoring sentences only for the top 10 candidates, would cut this. The reranker crashed with out-of-memory errors on this 16 GB laptop until
   its batch size was reduced.
 - **Graph extraction is heuristic.** 319 of 903 cross-references are unresolved, and
   some "section titles" are paragraph openings. A few party names are generic
