@@ -19,3 +19,24 @@ class Chunk:
     start: int  # inclusive character offset into the original document
     end: int  # exclusive character offset into the original document
     text: str  # always equal to document.text[start:end]
+
+
+@dataclass(frozen=True)
+class Passage:
+    rank: int
+    chunk_id: str
+    file_path: str
+    start: int
+    end: int
+    score: float  # cosine similarity in [-1, 1]; higher is more similar, not a probability
+    text: str
+
+
+@dataclass(frozen=True)
+class SearchResult:
+    query: str
+    passages: list[Passage]  # empty when the system abstains
+    abstained: bool
+    top_score: float | None
+    threshold: float | None
+    message: str

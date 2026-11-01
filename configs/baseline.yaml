@@ -20,3 +20,9 @@ embedding:
 
 index:
   output_root: artifacts/indexes   # git-ignored; one subfolder per index fingerprint
+
+retrieval:
+  top_k: 10
+  # Calibrated on train only (python -m contract_intelligence.retrieval.calibrate):
+  # maximises balanced accuracy of top-1 cosine score, answerable vs unanswerable.
+  abstain_threshold: 0.6085

@@ -47,12 +47,25 @@ class IndexConfig:
 
 
 @dataclass(frozen=True)
+class RetrievalConfig:
+    top_k: int = 10
+    # Abstain when the best cosine score is below this. A similarity score, not a
+    # probability: it is only meaningful relative to scores from the same model.
+    abstain_threshold: float | None = None
+
+    def __post_init__(self) -> None:
+        if self.top_k <= 0:
+            raise ValueError("top_k must be positive")
+
+
+@dataclass(frozen=True)
 class PipelineConfig:
     name: str
     data: DataConfig = field(default_factory=DataConfig)
     chunking: ChunkingConfig = field(default_factory=ChunkingConfig)
     embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
     index: IndexConfig = field(default_factory=IndexConfig)
+    retrieval: RetrievalConfig = field(default_factory=RetrievalConfig)
 
     def resolve(self, relative: str) -> Path:
         return PROJECT_ROOT / relative
@@ -66,4 +79,5 @@ def load_config(path: str | Path) -> PipelineConfig:
         chunking=ChunkingConfig(**raw.get("chunking", {})),
         embedding=EmbeddingConfig(**raw.get("embedding", {})),
         index=IndexConfig(**raw.get("index", {})),
+        retrieval=RetrievalConfig(**raw.get("retrieval", {})),
     )

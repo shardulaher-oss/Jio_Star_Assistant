@@ -73,6 +73,19 @@ Indexes are saved under the git-ignored `artifacts/indexes/<fingerprint>/` (`ind
 settings and the embedding model, so a matching index is reused and anything else is
 rebuilt. Pass `--rebuild` to force a rebuild.
 
+## Retrieval and abstention
+
+`contract_intelligence.retrieval.retriever.Retriever` is the single backend used by the
+CLI, the web app and evaluation. It returns ranked passages (file, start/end offsets,
+cosine score, text), or an empty list with a message when the best score is below
+`retrieval.abstain_threshold`.
+
+To recalibrate the threshold (train queries and train unanswerable queries only):
+
+```powershell
+.\.venv\Scripts\python.exe -m contract_intelligence.retrieval.calibrate --config configs/baseline.yaml
+```
+
 ## Planned reproducibility contract
 
 The implementation must select exactly 194 CUAD queries with the benchmark authors' `mini()` procedure, index only contracts referenced by those queries, preserve UTF-8 character offsets, use the specified SHA-256 split, freeze at least 30 unanswerable questions before optimization, and keep all improvement decisions reproducible from configuration and experiment logs.
