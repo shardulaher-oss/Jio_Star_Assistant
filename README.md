@@ -60,6 +60,19 @@ $env:PYTHONPATH = "src"
 Chunks are exact slices of the original UTF-8 text (`document[start:end] == chunk.text`),
 trimmed of leading and trailing whitespace. No text is rewritten, so offsets stay valid.
 
+## Embeddings and FAISS index
+
+```powershell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m contract_intelligence.indexing.dense_index --config configs/baseline.yaml
+```
+
+The first run downloads the embedding model (about 90 MB) and takes about a minute on CPU.
+Indexes are saved under the git-ignored `artifacts/indexes/<fingerprint>/` (`index.faiss`,
+`chunks.jsonl`, `manifest.json`). The fingerprint covers the corpus hashes, the chunking
+settings and the embedding model, so a matching index is reused and anything else is
+rebuilt. Pass `--rebuild` to force a rebuild.
+
 ## Planned reproducibility contract
 
 The implementation must select exactly 194 CUAD queries with the benchmark authors' `mini()` procedure, index only contracts referenced by those queries, preserve UTF-8 character offsets, use the specified SHA-256 split, freeze at least 30 unanswerable questions before optimization, and keep all improvement decisions reproducible from configuration and experiment logs.

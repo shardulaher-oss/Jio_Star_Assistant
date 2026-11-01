@@ -32,10 +32,27 @@ class ChunkingConfig:
 
 
 @dataclass(frozen=True)
+class EmbeddingConfig:
+    model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
+    normalize_whitespace: bool = True  # applied to a copy of the text, never to offsets
+    query_prefix: str = ""  # some models (e.g. BGE, E5) expect an instruction prefix
+    passage_prefix: str = ""
+    batch_size: int = 64
+    device: str = "cpu"
+
+
+@dataclass(frozen=True)
+class IndexConfig:
+    output_root: str = "artifacts/indexes"
+
+
+@dataclass(frozen=True)
 class PipelineConfig:
     name: str
     data: DataConfig = field(default_factory=DataConfig)
     chunking: ChunkingConfig = field(default_factory=ChunkingConfig)
+    embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
+    index: IndexConfig = field(default_factory=IndexConfig)
 
     def resolve(self, relative: str) -> Path:
         return PROJECT_ROOT / relative
@@ -47,4 +64,6 @@ def load_config(path: str | Path) -> PipelineConfig:
         name=raw["name"],
         data=DataConfig(**raw.get("data", {})),
         chunking=ChunkingConfig(**raw.get("chunking", {})),
+        embedding=EmbeddingConfig(**raw.get("embedding", {})),
+        index=IndexConfig(**raw.get("index", {})),
     )

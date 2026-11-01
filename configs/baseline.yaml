@@ -9,3 +9,14 @@ chunking:
   strategy: fixed      # fixed-size character windows (LegalBench-RAG's naive chunker)
   chunk_size: 500      # characters
   chunk_overlap: 0     # characters shared by consecutive windows
+
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2   # 384-dim, 256-token limit, fast on CPU
+  normalize_whitespace: true   # collapse runs of spaces in the text sent to the model only
+  query_prefix: ""
+  passage_prefix: ""
+  batch_size: 64
+  device: cpu
+
+index:
+  output_root: artifacts/indexes   # git-ignored; one subfolder per index fingerprint
