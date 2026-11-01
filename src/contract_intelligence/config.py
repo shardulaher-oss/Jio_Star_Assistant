@@ -63,8 +63,15 @@ class GraphConfig:
 
 
 @dataclass(frozen=True)
+class HybridConfig:
+    bm25_k1: float = 1.5
+    bm25_b: float = 0.75
+    bm25_query: str = "full"  # full | question (drop the "Consider the ...;" prefix)
+
+
+@dataclass(frozen=True)
 class RetrievalConfig:
-    pipeline: str = "dense"  # dense | graph
+    pipeline: str = "dense"  # dense | graph | bm25
     top_k: int = 10
     # Abstain when the best cosine score is below this. A similarity score, not a
     # probability: it is only meaningful relative to scores from the same model.
@@ -84,6 +91,7 @@ class PipelineConfig:
     index: IndexConfig = field(default_factory=IndexConfig)
     retrieval: RetrievalConfig = field(default_factory=RetrievalConfig)
     graph: GraphConfig = field(default_factory=GraphConfig)
+    hybrid: HybridConfig = field(default_factory=HybridConfig)
 
     def resolve(self, relative: str) -> Path:
         return PROJECT_ROOT / relative
@@ -99,4 +107,5 @@ def load_config(path: str | Path) -> PipelineConfig:
         index=IndexConfig(**raw.get("index", {})),
         retrieval=RetrievalConfig(**raw.get("retrieval", {})),
         graph=GraphConfig(**raw.get("graph", {})),
+        hybrid=HybridConfig(**raw.get("hybrid", {})),
     )

@@ -1,0 +1,34 @@
+# BM25 only (train study): same corpus and chunks as sentence_800_0, keyword retrieval instead of embeddings.
+name: bm25_question
+
+data:
+  corpus_root: data/raw/corpus
+  document_manifest: data/processed/document_manifest.json
+
+chunking:
+  strategy: sentence
+  chunk_size: 800
+  chunk_overlap: 0
+
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2   # 384-dim, 256-token limit, fast on CPU
+  normalize_whitespace: true   # collapse runs of spaces in the text sent to the model only
+  query_prefix: ""
+  passage_prefix: ""
+  batch_size: 64
+  device: cpu
+
+index:
+  output_root: artifacts/indexes   # git-ignored; one subfolder per index fingerprint
+
+retrieval:
+  pipeline: bm25
+  top_k: 10
+  # Calibrated on train only (python -m contract_intelligence.retrieval.calibrate):
+  # maximises balanced accuracy of top-1 cosine score, answerable vs unanswerable.
+  abstain_threshold: 0.6085
+
+hybrid:
+  bm25_k1: 1.5
+  bm25_b: 0.75
+  bm25_query: question

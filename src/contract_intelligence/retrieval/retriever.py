@@ -44,6 +44,10 @@ def build_ranker(config: PipelineConfig, encoder: Encoder, dense: DenseIndex) ->
         from contract_intelligence.retrieval.graph_ranker import GraphRanker
 
         return GraphRanker(encoder, dense, load_or_build_graph(config), config.graph)
+    if pipeline == "bm25":
+        from contract_intelligence.retrieval.lexical import BM25Ranker
+
+        return BM25Ranker(dense, config.hybrid)
     raise ValueError(f"Unknown retrieval pipeline: {pipeline}")
 
 
