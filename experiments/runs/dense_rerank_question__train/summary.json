@@ -1,0 +1,96 @@
+{
+  "config": "dense_rerank_question",
+  "split": "train",
+  "n_answerable": 140,
+  "n_unanswerable": 30,
+  "top_k": 10,
+  "abstain_threshold": 0.6085,
+  "retrieval": {
+    "precision": {
+      "1": 0.0619,
+      "2": 0.0568,
+      "4": 0.0438,
+      "8": 0.032,
+      "16": 0.0244,
+      "32": 0.0144,
+      "64": 0.0113
+    },
+    "recall": {
+      "1": 0.0749,
+      "2": 0.1407,
+      "4": 0.2139,
+      "8": 0.3145,
+      "16": 0.4644,
+      "32": 0.5655,
+      "64": 0.6949
+    },
+    "precision_merged": {
+      "1": 0.0619,
+      "2": 0.0568,
+      "4": 0.0438,
+      "8": 0.032,
+      "16": 0.0244,
+      "32": 0.0144,
+      "64": 0.0113
+    },
+    "recall_merged": {
+      "1": 0.0749,
+      "2": 0.1407,
+      "4": 0.2139,
+      "8": 0.3145,
+      "16": 0.4644,
+      "32": 0.5655,
+      "64": 0.6949
+    },
+    "doc_hit_rate": {
+      "1": 0.2286,
+      "2": 0.3429,
+      "4": 0.4929,
+      "8": 0.6929,
+      "16": 0.8857,
+      "32": 0.9929,
+      "64": 1.0
+    },
+    "mrr": 0.2046
+  },
+  "end_to_end": {
+    "precision": {
+      "1": 0.0343,
+      "2": 0.0338,
+      "4": 0.0233,
+      "8": 0.0159,
+      "16": 0.0127,
+      "32": 0.0071,
+      "64": 0.0051
+    },
+    "recall": {
+      "1": 0.0438,
+      "2": 0.0863,
+      "4": 0.1208,
+      "8": 0.1659,
+      "16": 0.2627,
+      "32": 0.3184,
+      "64": 0.3569
+    }
+  },
+  "abstention": {
+    "unanswerable_correctly_abstained": 0.7333,
+    "answerable_wrongly_abstained": 0.5571,
+    "balanced_accuracy": 0.5881,
+    "by_unanswerable_category": {
+      "clause_absent_from_indexed_contract": "12/15",
+      "contract_not_in_corpus": "6/10",
+      "out_of_scope": "4/5"
+    }
+  },
+  "diagnosis_at_k10": {
+    "wrong_document": 17,
+    "wrong_abstention": 78,
+    "full_coverage": 22,
+    "right_document_wrong_section": 15,
+    "partial_coverage": 8,
+    "correct_abstention": 22,
+    "false_answer": 8
+  },
+  "seconds": 448.9
+}

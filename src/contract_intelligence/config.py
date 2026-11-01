@@ -64,14 +64,28 @@ class GraphConfig:
 
 @dataclass(frozen=True)
 class HybridConfig:
+    # Query text per stage: full | question (drop the "Consider the ...;" prefix)
     bm25_k1: float = 1.5
     bm25_b: float = 0.75
-    bm25_query: str = "full"  # full | question (drop the "Consider the ...;" prefix)
+    bm25_query: str = "full"
+    dense_query: str = "full"
+    dense_pool: int = 50  # candidates taken from FAISS
+    bm25_pool: int = 50  # candidates taken from BM25
+    rrf_k: int = 60
+    dense_weight: float = 1.0
+    bm25_weight: float = 1.0
+    reranker_model: str = ""  # e.g. cross-encoder/ms-marco-MiniLM-L6-v2; "" disables
+    rerank_pool: int = 40  # fused candidates rescored by the cross-encoder
+    rerank_query: str = "full"
+    rerank_batch_size: int = 32
+    # graph_hybrid only: the graph ranking as an extra RRF input (0 disables a list)
+    graph_pool: int = 50
+    graph_weight: float = 1.0
 
 
 @dataclass(frozen=True)
 class RetrievalConfig:
-    pipeline: str = "dense"  # dense | graph | bm25
+    pipeline: str = "dense"  # dense | graph | bm25 | hybrid | graph_hybrid
     top_k: int = 10
     # Abstain when the best cosine score is below this. A similarity score, not a
     # probability: it is only meaningful relative to scores from the same model.

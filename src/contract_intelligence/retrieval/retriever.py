@@ -35,6 +35,16 @@ class DenseRanker:
         ]
 
 
+def build_reranker(config: PipelineConfig):
+    if not config.hybrid.reranker_model:
+        return None
+    from contract_intelligence.retrieval.reranking import CrossEncoderReranker
+
+    return CrossEncoderReranker(
+        config.hybrid.reranker_model, config.hybrid.rerank_batch_size, config.embedding.device
+    )
+
+
 def build_ranker(config: PipelineConfig, encoder: Encoder, dense: DenseIndex) -> Ranker:
     pipeline = config.retrieval.pipeline
     if pipeline == "dense":
@@ -48,6 +58,17 @@ def build_ranker(config: PipelineConfig, encoder: Encoder, dense: DenseIndex) ->
         from contract_intelligence.retrieval.lexical import BM25Ranker
 
         return BM25Ranker(dense, config.hybrid)
+    if pipeline == "hybrid":
+        from contract_intelligence.retrieval.hybrid_ranker import HybridRanker
+
+        return HybridRanker(encoder, dense, config.hybrid, build_reranker(config))
+    if pipeline == "graph_hybrid":
+        from contract_intelligence.graph.builder import load_or_build_graph
+        from contract_intelligence.retrieval.graph_hybrid_ranker import GraphHybridRanker
+        from contract_intelligence.retrieval.graph_ranker import GraphRanker
+
+        graph_ranker = GraphRanker(encoder, dense, load_or_build_graph(config), config.graph)
+        return GraphHybridRanker(encoder, dense, graph_ranker, config.hybrid, build_reranker(config))
     raise ValueError(f"Unknown retrieval pipeline: {pipeline}")
 
 
