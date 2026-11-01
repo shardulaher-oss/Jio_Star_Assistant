@@ -23,7 +23,7 @@ writes reproducible metadata:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m contract_intelligence.data.prepare
+.\.venv\Scripts\python.exe -m contract_intelligence.data.prepare
 ```
 
 Expected dataset statistics:
