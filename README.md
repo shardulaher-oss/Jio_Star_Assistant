@@ -83,6 +83,19 @@ Indexes are saved under the git-ignored `artifacts/indexes/<fingerprint>/` (`ind
 settings and the embedding model, so a matching index is reused and anything else is
 rebuilt. Pass `--rebuild` to force a rebuild.
 
+## Knowledge graph
+
+```powershell
+.\.venv\Scripts\python.exe -m contract_intelligence.graph.builder --config configs/experiments/sentence_800_0.yaml
+```
+
+This builds a NetworkX graph of contracts, sections, clauses (the retrieval chunks),
+definitions, parties, expiry dates, rights, restrictions and IP-ownership statements,
+linked by BELONGS_TO, DEFINES, DEPENDS_ON, REFERENCES, GRANTS_RIGHT, RESTRICTS,
+EXPIRES_ON, OWNED_BY and PARTY_TO edges. Extraction is rule-based (no LLM). Every node
+and edge keeps the character offsets of the text that produced it. The build takes
+about 2 seconds and is saved to the git-ignored `artifacts/graphs/<fingerprint>.json.gz`.
+
 ## Retrieval and abstention
 
 `contract_intelligence.retrieval.retriever.Retriever` is the single backend used by the

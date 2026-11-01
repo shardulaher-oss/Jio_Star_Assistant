@@ -50,6 +50,11 @@ class IndexConfig:
 
 
 @dataclass(frozen=True)
+class GraphConfig:
+    output_root: str = "artifacts/graphs"
+
+
+@dataclass(frozen=True)
 class RetrievalConfig:
     top_k: int = 10
     # Abstain when the best cosine score is below this. A similarity score, not a
@@ -69,6 +74,7 @@ class PipelineConfig:
     embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
     index: IndexConfig = field(default_factory=IndexConfig)
     retrieval: RetrievalConfig = field(default_factory=RetrievalConfig)
+    graph: GraphConfig = field(default_factory=GraphConfig)
 
     def resolve(self, relative: str) -> Path:
         return PROJECT_ROOT / relative
@@ -83,4 +89,5 @@ def load_config(path: str | Path) -> PipelineConfig:
         embedding=EmbeddingConfig(**raw.get("embedding", {})),
         index=IndexConfig(**raw.get("index", {})),
         retrieval=RetrievalConfig(**raw.get("retrieval", {})),
+        graph=GraphConfig(**raw.get("graph", {})),
     )
