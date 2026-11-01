@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Downloaded benchmark data and generated indexes
+data/raw/
+data/processed/
+artifacts/
+indexes/
+cache/
+*.faiss
+*.pkl
+*.pickle
+
+# Evaluation outputs and local logs
+outputs/
+logs/
+*.log
+
+# Confidential assignment material; never commit it
+*.pdf
+_pdf_extract.txt
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
