@@ -1,0 +1,2 @@
+{"timestamp": "2026-11-01T16:31:07+00:00", "config": "final", "git_commit": "4c7b377", "reason": "final report: frozen final config (commit 4c7b377), single test evaluation"}
+{"timestamp": "2026-11-01T16:31:16+00:00", "config": "baseline", "git_commit": "4c7b377", "reason": "final report: Phase 1 baseline for the baseline-vs-final table, single test evaluation"}
