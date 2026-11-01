@@ -48,6 +48,18 @@ The source benchmark and contracts are downloaded under ignored `data/raw/`.
 The selected query files, query manifest, document manifest, and frozen
 unanswerable set are written under tracked `data/processed/` and `data/queries/`.
 
+## Chunking
+
+Pipeline settings live in `configs/*.yaml`. To chunk the corpus and print statistics:
+
+```powershell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m contract_intelligence.indexing.chunking --config configs/baseline.yaml
+```
+
+Chunks are exact slices of the original UTF-8 text (`document[start:end] == chunk.text`),
+trimmed of leading and trailing whitespace. No text is rewritten, so offsets stay valid.
+
 ## Planned reproducibility contract
 
 The implementation must select exactly 194 CUAD queries with the benchmark authors' `mini()` procedure, index only contracts referenced by those queries, preserve UTF-8 character offsets, use the specified SHA-256 split, freeze at least 30 unanswerable questions before optimization, and keep all improvement decisions reproducible from configuration and experiment logs.

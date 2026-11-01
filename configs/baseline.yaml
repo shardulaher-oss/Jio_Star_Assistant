@@ -1,0 +1,11 @@
+# Baseline: the simplest reasonable pipeline. Every later iteration is compared against it.
+name: baseline
+
+data:
+  corpus_root: data/raw/corpus
+  document_manifest: data/processed/document_manifest.json
+
+chunking:
+  strategy: fixed      # fixed-size character windows (LegalBench-RAG's naive chunker)
+  chunk_size: 500      # characters
+  chunk_overlap: 0     # characters shared by consecutive windows
