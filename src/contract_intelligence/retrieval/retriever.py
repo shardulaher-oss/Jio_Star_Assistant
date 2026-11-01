@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
+import logging
+import time
 from typing import Protocol
 
-from contract_intelligence.config import PipelineConfig, RetrievalConfig
+from contract_intelligence.config import PipelineConfig
 from contract_intelligence.indexing.dense_index import (
     DenseIndex,
     Encoder,
     SentenceTransformerEncoder,
     load_or_build,
 )
+from contract_intelligence.logging_utils import query_id
+from contract_intelligence.retrieval.abstention import clean_query, decide  # noqa: F401  (decide re-exported)
 from contract_intelligence.schemas import Passage, SearchResult
+
+log = logging.getLogger(__name__)
 
 
 class Ranker(Protocol):
@@ -75,18 +81,6 @@ def build_ranker(config: PipelineConfig, encoder: Encoder, dense: DenseIndex) ->
     raise ValueError(f"Unknown retrieval pipeline: {pipeline}")
 
 
-def decide(passages: list[Passage], config: RetrievalConfig) -> tuple[bool, str]:
-    """Return (abstain, message) for a ranked candidate list."""
-    if not passages:
-        return True, "No passages were retrieved."
-    if config.abstain_threshold is not None and passages[0].score < config.abstain_threshold:
-        return True, (
-            f"No passage is relevant enough: best score {passages[0].score:.3f} is below "
-            f"the threshold {config.abstain_threshold:.3f}."
-        )
-    return False, f"Returned {len(passages)} passages."
-
-
 class Retriever:
     def __init__(
         self, config: PipelineConfig, encoder: Encoder, dense: DenseIndex, ranker: Ranker | None = None
@@ -123,24 +117,33 @@ class Retriever:
         return results
 
     def search_many(self, queries: list[str], k: int | None = None) -> list[SearchResult]:
+        started = time.perf_counter()
+        checked = [clean_query(q) for q in queries]
+        valid = [text for text, problem in checked if problem is None]
+        ranked = iter(self.candidates(valid, k) if valid else [])
         results = []
-        cleaned = [q.strip() for q in queries]
-        non_empty = [q for q in cleaned if q]
-        ranked = iter(self.candidates(non_empty, k) if non_empty else [])
-        for query in cleaned:
-            if not query:
-                results.append(SearchResult(query, [], True, None, None, "The query is empty."))
+        for text, problem in checked:
+            if problem is not None:  # rejected input: explain instead of searching
+                results.append(SearchResult(text, [], True, None, None, problem))
                 continue
             passages = next(ranked)
             abstain, message = decide(passages, self.config.retrieval)
             results.append(SearchResult(
-                query=query,
+                query=text,
                 passages=[] if abstain else passages,
                 abstained=abstain,
                 top_score=passages[0].score if passages else None,
                 threshold=self.config.retrieval.abstain_threshold,
                 message=message,
             ))
+        elapsed = (time.perf_counter() - started) * 1000
+        for result in results:
+            log.info("search", extra={
+                "event": "search", "config": self.config.name, "pipeline": self.config.retrieval.pipeline,
+                "query_id": query_id(result.query), "query_chars": len(result.query),
+                "abstained": result.abstained, "passages": len(result.passages),
+                "top_score": result.top_score, "batch_latency_ms": round(elapsed, 1),
+            })
         return results
 
     def search(self, query: str, k: int | None = None) -> SearchResult:

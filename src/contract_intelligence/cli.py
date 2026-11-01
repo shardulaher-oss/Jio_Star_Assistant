@@ -11,11 +11,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import textwrap
 from dataclasses import asdict, replace
 
-from contract_intelligence.config import PipelineConfig, load_config
+from contract_intelligence.config import ConfigError, PipelineConfig, load_config
+from contract_intelligence.logging_utils import setup_logging
 from contract_intelligence.schemas import SearchResult
+
+
+def top_k_value(text: str) -> int:
+    value = int(text)
+    if not 1 <= value <= 100:
+        raise argparse.ArgumentTypeError("must be between 1 and 100")
+    return value
 
 
 def with_overrides(
@@ -59,12 +68,36 @@ def cmd_query(args: argparse.Namespace) -> int:
 
     config = with_overrides(load_config(args.config), args.top_k, args.threshold, args.no_abstain)
     result = Retriever.from_config(config).search(args.question)
-    print(
-        json.dumps(asdict(result), indent=2, ensure_ascii=False)
-        if args.json
-        else format_result(result, max_chars=args.max_chars)
-    )
+    answer = None
+    if args.answer:
+        from contract_intelligence.answering.generator import AnswerGenerator
+
+        try:
+            answer = AnswerGenerator(config.answer).answer(result)
+        except Exception as error:  # retrieval results are still useful without the answer
+            print(f"warning: answer generation failed ({type(error).__name__}: {error}); "
+                  "showing retrieval results only.", file=sys.stderr)
+    if args.json:
+        payload = asdict(result) | ({"answer": answer.to_dict()} if answer else {})
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+    else:
+        if answer:
+            print(format_answer(answer) + "\n")
+        print(format_result(result, max_chars=args.max_chars))
     return 0
+
+
+def format_answer(answer, width: int = 100) -> str:
+    lines = [f"ANSWER ({answer.answer_type}, confidence {answer.confidence}, model {answer.model})"]
+    lines += textwrap.wrap(answer.answer, width=width, initial_indent="    ", subsequent_indent="    ")
+    if answer.evidence:
+        e = answer.evidence
+        lines.append(f"  Evidence: passage #{e.passage_rank}  {e.file_path}  [chars {e.start}-{e.end}]")
+        lines += textwrap.wrap(f'"{" ".join(e.text.split())}"', width=width,
+                               initial_indent="    ", subsequent_indent="    ")
+    if answer.note:
+        lines.append(f"  Note: {answer.note}")
+    return "\n".join(lines)
 
 
 def cmd_build_index(args: argparse.Namespace) -> int:
@@ -94,16 +127,20 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="contract-search", description="Clause search over the indexed contracts."
     )
-    parser.add_argument("--config", default="configs/baseline.yaml", help="pipeline YAML")
+    parser.add_argument("--config", default="configs/final.yaml", help="pipeline YAML")
+    parser.add_argument("--log-level", default="WARNING", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
+    parser.add_argument("--log-json", action="store_true", help="structured JSON logs on stderr")
     sub = parser.add_subparsers(dest="command", required=True)
 
     query = sub.add_parser("query", help="search for the clauses that answer a question")
     query.add_argument("question")
-    query.add_argument("--top-k", type=int, help="override retrieval.top_k")
+    query.add_argument("--top-k", type=top_k_value, help="override retrieval.top_k (1-100)")
     query.add_argument("--threshold", type=float, help="override retrieval.abstain_threshold")
     query.add_argument("--no-abstain", action="store_true", help="always return passages")
     query.add_argument("--json", action="store_true", help="print machine-readable JSON")
     query.add_argument("--max-chars", type=int, help="shorten displayed passages at a sentence end")
+    query.add_argument("--answer", action="store_true",
+                       help="also generate a grounded answer with the configured LLM (Gemini)")
     query.set_defaults(func=cmd_query)
 
     build = sub.add_parser("build-index", help="embed chunks and build the FAISS index")
@@ -119,7 +156,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    return args.func(args)
+    setup_logging(args.log_level, args.log_json)
+    try:
+        return args.func(args)
+    except (ConfigError, FileNotFoundError, PermissionError) as error:
+        # Expected operator errors: a clear one-line message, no traceback.
+        print(f"error: {error}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

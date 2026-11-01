@@ -9,6 +9,19 @@ import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
+PIPELINES = ("dense", "graph", "bm25", "hybrid", "graph_hybrid")
+QUERY_MODES = ("full", "question")
+ANSWER_PROVIDERS = ("gemini",)
+
+
+class ConfigError(ValueError):
+    """A configuration file is missing, malformed or has invalid values."""
+
+
+def _check(condition: bool, message: str) -> None:
+    if not condition:
+        raise ValueError(message)
+
 
 @dataclass(frozen=True)
 class DataConfig:
@@ -64,6 +77,12 @@ class GraphConfig:
     # router cannot match to any indexed contract.
     abstain_when_unrouted: bool = False
 
+    def __post_init__(self) -> None:
+        _check(0 < self.route_keep_ratio <= 1, "route_keep_ratio must be in (0, 1]")
+        _check(self.route_min_score >= 0, "route_min_score must be >= 0")
+        _check(self.expand_top >= 0, "expand_top must be >= 0")
+        _check(0 <= self.expansion_decay <= 1, "expansion_decay must be in [0, 1]")
+
 
 @dataclass(frozen=True)
 class HybridConfig:
@@ -85,6 +104,17 @@ class HybridConfig:
     graph_pool: int = 50
     graph_weight: float = 1.0
 
+    def __post_init__(self) -> None:
+        for name in ("bm25_query", "dense_query", "rerank_query"):
+            _check(getattr(self, name) in QUERY_MODES, f"{name} must be one of {QUERY_MODES}")
+        for name in ("dense_pool", "bm25_pool", "graph_pool"):  # 0 = that list contributes nothing
+            _check(getattr(self, name) >= 0, f"{name} must be >= 0")
+        for name in ("rerank_pool", "rrf_k", "rerank_batch_size"):
+            _check(getattr(self, name) > 0, f"{name} must be positive")
+        for name in ("dense_weight", "bm25_weight", "graph_weight"):
+            _check(getattr(self, name) >= 0, f"{name} must be >= 0")
+        _check(self.bm25_k1 >= 0 and 0 <= self.bm25_b <= 1, "bm25_k1 must be >= 0 and bm25_b in [0, 1]")
+
 
 @dataclass(frozen=True)
 class RetrievalConfig:
@@ -95,8 +125,32 @@ class RetrievalConfig:
     abstain_threshold: float | None = None
 
     def __post_init__(self) -> None:
-        if self.top_k <= 0:
-            raise ValueError("top_k must be positive")
+        _check(self.pipeline in PIPELINES, f"pipeline must be one of {PIPELINES}")
+        _check(self.top_k > 0, "top_k must be positive")
+
+
+@dataclass(frozen=True)
+class AnswerConfig:
+    """Optional LLM answer on top of retrieval. Off unless requested (CLI --answer, app toggle)."""
+
+    provider: str = "gemini"
+    # gemini-2.5-flash is closed to new API keys; 3.8-flash timed out in testing (Nov 2026).
+    model: str = "gemini-3.1-flash-lite"
+    max_passages: int = 5  # top retrieved passages shown to the model
+    temperature: float = 0.0
+    thinking_budget: int | None = None  # Gemini 2.5 only; None leaves the model default
+    timeout_seconds: int = 60
+    cache_path: str = "experiments/llm_cache/answers.jsonl"  # committed, so results reproduce offline
+    # Privacy switch: the provider is an external API, so passages (contract text) leave the
+    # machine. True is acceptable for the public CUAD corpus; set False for confidential
+    # agreements and answer generation will refuse to send anything.
+    allow_external: bool = True
+
+    def __post_init__(self) -> None:
+        _check(self.provider in ANSWER_PROVIDERS, f"provider must be one of {ANSWER_PROVIDERS}")
+        _check(1 <= self.max_passages <= 20, "max_passages must be in [1, 20]")
+        _check(0 <= self.temperature <= 2, "temperature must be in [0, 2]")
+        _check(self.timeout_seconds > 0, "timeout_seconds must be positive")
 
 
 @dataclass(frozen=True)
@@ -109,20 +163,48 @@ class PipelineConfig:
     retrieval: RetrievalConfig = field(default_factory=RetrievalConfig)
     graph: GraphConfig = field(default_factory=GraphConfig)
     hybrid: HybridConfig = field(default_factory=HybridConfig)
+    answer: AnswerConfig = field(default_factory=AnswerConfig)
 
     def resolve(self, relative: str) -> Path:
         return PROJECT_ROOT / relative
 
 
+SECTIONS = {
+    "data": DataConfig, "chunking": ChunkingConfig, "embedding": EmbeddingConfig,
+    "index": IndexConfig, "retrieval": RetrievalConfig, "graph": GraphConfig,
+    "hybrid": HybridConfig, "answer": AnswerConfig,
+}
+
+
 def load_config(path: str | Path) -> PipelineConfig:
-    raw = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
-    return PipelineConfig(
-        name=raw["name"],
-        data=DataConfig(**raw.get("data", {})),
-        chunking=ChunkingConfig(**raw.get("chunking", {})),
-        embedding=EmbeddingConfig(**raw.get("embedding", {})),
-        index=IndexConfig(**raw.get("index", {})),
-        retrieval=RetrievalConfig(**raw.get("retrieval", {})),
-        graph=GraphConfig(**raw.get("graph", {})),
-        hybrid=HybridConfig(**raw.get("hybrid", {})),
-    )
+    """Load a YAML config, rejecting unknown keys and invalid values with a clear message."""
+    path = Path(path)
+    if not path.exists():
+        raise ConfigError(f"Config file not found: {path}")
+    try:
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as error:
+        raise ConfigError(f"{path}: invalid YAML: {error}") from error
+    if not isinstance(raw, dict):
+        raise ConfigError(f"{path}: top level must be a mapping")
+    if not isinstance(raw.get("name"), str) or not raw["name"]:
+        raise ConfigError(f"{path}: 'name' (a non-empty string) is required")
+    unknown = set(raw) - set(SECTIONS) - {"name"}
+    if unknown:
+        raise ConfigError(f"{path}: unknown section(s) {sorted(unknown)}; valid: {sorted(SECTIONS)}")
+
+    sections = {}
+    for section, cls in SECTIONS.items():
+        values = raw.get(section) or {}
+        if not isinstance(values, dict):
+            raise ConfigError(f"{path}: section '{section}' must be a mapping")
+        valid = set(cls.__dataclass_fields__)
+        unknown_keys = set(values) - valid
+        if unknown_keys:
+            raise ConfigError(f"{path}: unknown key(s) in '{section}': {sorted(unknown_keys)}; "
+                              f"valid: {sorted(valid)}")
+        try:
+            sections[section] = cls(**values)
+        except (TypeError, ValueError) as error:
+            raise ConfigError(f"{path}: invalid '{section}' settings: {error}") from error
+    return PipelineConfig(name=raw["name"], **sections)
