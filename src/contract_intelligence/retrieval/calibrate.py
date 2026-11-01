@@ -49,6 +49,11 @@ def sweep(pos: np.ndarray, neg: np.ndarray) -> list[dict]:
     return rows
 
 
+def calibrate_from_scores(pos: np.ndarray, neg: np.ndarray) -> dict:
+    """Best threshold by balanced accuracy (ties: answer more answerable queries)."""
+    return max(sweep(pos, neg), key=lambda r: (r["balanced_accuracy"], r["answerable_answered"]))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--config", default="configs/baseline.yaml")
@@ -74,7 +79,7 @@ def main() -> None:
         return {"n": len(x), **{f"p{p}": round(float(v), 3) for p, v in zip((0, 10, 25, 50, 75, 90, 100), q)}}
 
     rows = sweep(pos, neg)
-    best = max(rows, key=lambda r: (r["balanced_accuracy"], r["answerable_answered"]))
+    best = calibrate_from_scores(pos, neg)
     print(json.dumps({
         "config": config.name,
         "top1_score_answerable_train": describe(pos),

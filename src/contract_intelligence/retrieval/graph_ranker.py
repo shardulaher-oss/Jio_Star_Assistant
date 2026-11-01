@@ -117,6 +117,15 @@ class GraphRanker:
             return list(range(len(self.dense.chunks)))
         return [p for fp in sorted(routed) for p in self.by_file[fp]]
 
+    def names_unknown_contract(self, query: str) -> bool:
+        """True when abstain_when_unrouted is on and the query names an unmatched agreement."""
+        return (
+            self.config.abstain_when_unrouted
+            and bool(parse_query(query).contract)
+            and self.router.route(parse_query(query).contract, self.config.route_min_score,
+                                  self.config.route_keep_ratio) is None
+        )
+
     def route(self, query: str) -> set[str] | None:
         if not self.config.route_contracts:
             return None
@@ -131,6 +140,9 @@ class GraphRanker:
 
         results = []
         for qi, (query, parse) in enumerate(zip(queries, parsed)):
+            if self.names_unknown_contract(query):
+                results.append([])
+                continue
             routed = self.route(query)
             candidates = self.candidates(routed)
             scores = self.vectors[candidates] @ query_vectors[qi]

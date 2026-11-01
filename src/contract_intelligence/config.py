@@ -60,6 +60,9 @@ class GraphConfig:
     section_title_weight: float = 0.3  # boost for question vs section-title similarity
     expand_top: int = 5  # seeds whose REFERENCES / DEFINES neighbours are added
     expansion_decay: float = 0.9  # neighbour score = seed score * decay
+    # Return nothing when the query names an agreement ("Consider the ...;") that the
+    # router cannot match to any indexed contract.
+    abstain_when_unrouted: bool = False
 
 
 @dataclass(frozen=True)

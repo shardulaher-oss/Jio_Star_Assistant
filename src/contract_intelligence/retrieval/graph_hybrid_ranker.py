@@ -48,6 +48,9 @@ class GraphHybridRanker:
             dense_rows = [[] for _ in queries]
         results = []
         for query, graph_list, dense_row in zip(queries, graph_lists, dense_rows):
+            if self.graph.names_unknown_contract(query):
+                results.append([])
+                continue
             rankings, weights = [], []
             if cfg.graph_weight:
                 rankings.append([p for p, _ in graph_list])

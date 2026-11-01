@@ -107,6 +107,16 @@ def test_graph_hybrid_global_dense_list_can_add_other_contracts() -> None:
     assert dense.chunks[ranked[0][0]].file_path == "cuad/RoanokeGas-Franchise.txt"
 
 
+def test_abstain_when_query_names_an_unknown_agreement() -> None:
+    ranker, dense = make_ranker(replace(SMALL, abstain_when_unrouted=True))
+    hybrid = GraphHybridRanker(ranker.encoder, dense, ranker, HybridConfig(bm25_query="question"))
+    unknown = "Consider the Distribution Agreement between Vantage Media and Coastal Cinemas; what is the term?"
+    known = "Consider the Roanoke Gas franchise with Vinton; when does it expire?"
+    assert ranker.rank([unknown], k=5) == [[]] and hybrid.rank([unknown], k=5) == [[]]
+    assert ranker.rank([known], k=5)[0] and hybrid.rank([known], k=5)[0]
+    assert ranker.rank(["when does the franchise expire?"], k=5)[0]  # names no agreement: search all
+
+
 def test_retriever_uses_graph_ranker_and_keeps_offsets() -> None:
     ranker, dense = make_ranker()
     config = replace(PipelineConfig(name="g"), retrieval=RetrievalConfig(pipeline="graph", top_k=3))
