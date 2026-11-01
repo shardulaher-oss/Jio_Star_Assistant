@@ -25,6 +25,48 @@ class Reranker(Protocol):
     def score(self, query: str, passages: list[str]) -> np.ndarray: ...
 
 
+MIN_SENTENCE_CHARS = 40  # shorter units (headings, numbers) are scored only as part of the chunk
+
+
+def sentence_units(text: str) -> list[str]:
+    from contract_intelligence.indexing.segmentation import segment
+
+    return [text[a:b] for a, b in segment(text) if b - a >= MIN_SENTENCE_CHARS]
+
+
+def score_pool(reranker: Reranker, query: str, texts: list[str], granularity: str = "chunk") -> np.ndarray:
+    """Relevance score per chunk.
+
+    chunk:        cross-encoder score of the whole chunk.
+    sentence_max: max(chunk score, best score of any sentence in the chunk). A
+                  one-sentence answer inside a long chunk of boilerplate is then not
+                  diluted by the rest of the chunk. All pairs go in one batch.
+    """
+    if granularity == "chunk" or not texts:
+        return reranker.score(query, texts)
+    units = [sentence_units(t) for t in texts]
+    flat = list(texts) + [u for group in units for u in group]
+    scores = reranker.score(query, flat)
+    out, offset = scores[: len(texts)].copy(), len(texts)
+    for i, group in enumerate(units):
+        if group:
+            out[i] = max(out[i], float(scores[offset : offset + len(group)].max()))
+            offset += len(group)
+    return out
+
+
+def rerank_fused(
+    reranker: Reranker, query: str, fused: list[tuple[int, float]], texts_of, pool_size: int, granularity: str
+) -> list[tuple[int, float]]:
+    """Rescore the top `pool_size` fused candidates; the rest follow below, in fused order."""
+    pool = fused[:pool_size]
+    scores = score_pool(reranker, query, [texts_of(p) for p, _ in pool], granularity)
+    reranked = sorted(zip((p for p, _ in pool), map(float, scores)), key=lambda x: (-x[1], x[0]))
+    floor = min((s for _, s in reranked), default=0.0)
+    tail = [(p, floor - 1.0 - i * 1e-6) for i, (p, _) in enumerate(fused[pool_size:])]
+    return reranked + tail
+
+
 class CrossEncoderReranker:
     def __init__(
         self,
@@ -52,9 +94,12 @@ class CrossEncoderReranker:
     @property
     def model(self):
         if self._model is None:  # load lazily: a fully cached run never needs the model
+            import torch
             from sentence_transformers import CrossEncoder
 
-            self._model = CrossEncoder(self.model_name, device=self.device, max_length=self.max_length)
+            # float32: some checkpoints default to float16, which is ~2x slower on CPU.
+            self._model = CrossEncoder(self.model_name, device=self.device, max_length=self.max_length,
+                                       model_kwargs={"dtype": torch.float32})
         return self._model
 
     def _key(self, query: str, passage: str) -> str:

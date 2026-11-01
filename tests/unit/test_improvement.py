@@ -36,7 +36,7 @@ def test_diagnose_and_bootstrap_accept_json_string_keys() -> None:
 def test_proposer_targets_the_biggest_failure_and_skips_tried_rules() -> None:
     diagnosis = {"false_answer:contract_not_in_corpus": 7, "ranked_too_low": 3}
     assert propose(diagnosis, set()).name == "abstain_when_unrouted"
-    assert propose(diagnosis, {"abstain_when_unrouted"}).name == "no_section_title_boost"
+    assert propose(diagnosis, {"abstain_when_unrouted"}).name == "sentence_max_rerank"  # ties: list order
     assert propose({}, set()) is None
     assert len({r.name for r in RULES}) == len(RULES)
 

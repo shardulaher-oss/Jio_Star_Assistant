@@ -61,3 +61,24 @@ def test_question_mode_drops_the_contract_prefix() -> None:
         ["Consider the Starlight License; who may sublicense?"], k=2
     )
     assert seen == ["who may sublicense?"]
+
+
+def test_sentence_max_lifts_a_chunk_whose_one_sentence_matches() -> None:
+    from contract_intelligence.retrieval.reranking import score_pool
+
+    class SentenceKeyword:
+        def score(self, query, passages):
+            # A short exact match scores high; long text is diluted, like a real cross-encoder.
+            return np.array([10.0 / len(p) if "not assignable" in p else 0.0 for p in passages])
+
+    boiler = "The terms shall bind and benefit the parties and their successors and assigns hereunder. "
+    texts = [boiler * 5 + "The rights under this Agreement are not assignable by any Party.", boiler * 6]
+    chunk = score_pool(SentenceKeyword(), "q", texts, "chunk")
+    best = score_pool(SentenceKeyword(), "q", texts, "sentence_max")
+    assert best[0] > chunk[0] and best[1] == chunk[1] == 0.0
+
+
+def test_chunk_granularity_is_unchanged_behaviour() -> None:
+    reranker = KeywordReranker("thirty")
+    ranked = make(HybridConfig(dense_pool=4, bm25_pool=4, rerank_pool=3), reranker).rank(["governed by"], k=4)[0]
+    assert reranker.calls == 1 and len(ranked) == 4

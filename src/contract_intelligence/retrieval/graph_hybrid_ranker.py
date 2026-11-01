@@ -19,7 +19,7 @@ from contract_intelligence.retrieval.fusion import reciprocal_rank_fusion
 from contract_intelligence.retrieval.graph_ranker import GraphRanker
 from contract_intelligence.retrieval.lexical import query_text
 from contract_intelligence.retrieval.query import parse_query
-from contract_intelligence.retrieval.reranking import Reranker
+from contract_intelligence.retrieval.reranking import Reranker, rerank_fused
 
 
 class GraphHybridRanker:
@@ -71,13 +71,9 @@ class GraphHybridRanker:
         results = []
         for query, fused in zip(queries, self.fused(queries)):
             if self.reranker is not None:
-                pool = fused[: self.config.rerank_pool]
-                scores = self.reranker.score(
-                    query_text(query, self.config.rerank_query), [self.dense.chunks[p].text for p, _ in pool]
+                fused = rerank_fused(
+                    self.reranker, query_text(query, self.config.rerank_query), fused,
+                    lambda p: self.dense.chunks[p].text, self.config.rerank_pool, self.config.rerank_granularity,
                 )
-                reranked = sorted(zip((p for p, _ in pool), map(float, scores)), key=lambda x: (-x[1], x[0]))
-                floor = min((s for _, s in reranked), default=0.0)
-                tail = [(p, floor - 1.0 - i * 1e-6) for i, (p, _) in enumerate(fused[self.config.rerank_pool :])]
-                fused = reranked + tail
             results.append(fused[:k])
         return results

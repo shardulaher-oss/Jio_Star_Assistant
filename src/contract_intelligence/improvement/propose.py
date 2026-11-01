@@ -22,6 +22,22 @@ class Rule:
 
 
 RULES = [
+    # Added after the first loop run, from the error analysis (HPIL case: the top chunk
+    # contains the answer but its 700-character score is diluted below the threshold).
+    Rule("sentence_max_rerank", ("ranked_too_low", "partial_coverage", "false_abstention"),
+         {"hybrid.rerank_granularity": "sentence_max"},
+         "Scoring each sentence of a candidate and keeping the best (with the chunk score) "
+         "stops boilerplate from diluting a one-sentence answer, improving both ranking and "
+         "false abstentions."),
+    Rule("mxbai_reranker", ("ranked_too_low", "partial_coverage"),
+         {"hybrid.reranker_model": "mixedbread-ai/mxbai-rerank-xsmall-v1"},
+         "A newer small reranker trained on broader relevance data may separate legal clauses "
+         "better than the MS MARCO MiniLM."),
+    Rule("l12_reranker_sentence_max", ("ranked_too_low", "partial_coverage", "false_abstention"),
+         {"hybrid.reranker_model": "cross-encoder/ms-marco-MiniLM-L12-v2",
+          "hybrid.rerank_granularity": "sentence_max"},
+         "The L12 reranker alone gained +0.024 R@5 (P=0.87); sentence-level scoring may add "
+         "enough to make the gain reliable."),
     Rule("abstain_when_unrouted", ("false_answer:contract_not_in_corpus",),
          {"graph.abstain_when_unrouted": True},
          "Queries naming an agreement the router cannot match are about contracts outside the "

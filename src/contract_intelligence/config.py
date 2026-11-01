@@ -100,6 +100,7 @@ class HybridConfig:
     rerank_pool: int = 40  # fused candidates rescored by the cross-encoder
     rerank_query: str = "full"
     rerank_batch_size: int = 32
+    rerank_granularity: str = "chunk"  # chunk | sentence_max (best of chunk and its sentences)
     # graph_hybrid only: the graph ranking as an extra RRF input (0 disables a list)
     graph_pool: int = 50
     graph_weight: float = 1.0
@@ -107,6 +108,8 @@ class HybridConfig:
     def __post_init__(self) -> None:
         for name in ("bm25_query", "dense_query", "rerank_query"):
             _check(getattr(self, name) in QUERY_MODES, f"{name} must be one of {QUERY_MODES}")
+        _check(self.rerank_granularity in ("chunk", "sentence_max"),
+               "rerank_granularity must be 'chunk' or 'sentence_max'")
         for name in ("dense_pool", "bm25_pool", "graph_pool"):  # 0 = that list contributes nothing
             _check(getattr(self, name) >= 0, f"{name} must be >= 0")
         for name in ("rerank_pool", "rrf_k", "rerank_batch_size"):

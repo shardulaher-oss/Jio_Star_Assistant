@@ -15,7 +15,7 @@ from contract_intelligence.config import HybridConfig
 from contract_intelligence.indexing.dense_index import DenseIndex, Encoder
 from contract_intelligence.retrieval.fusion import reciprocal_rank_fusion
 from contract_intelligence.retrieval.lexical import BM25Ranker, query_text
-from contract_intelligence.retrieval.reranking import Reranker
+from contract_intelligence.retrieval.reranking import Reranker, rerank_fused
 
 
 class HybridRanker:
@@ -43,14 +43,10 @@ class HybridRanker:
         ]
 
     def rerank(self, query: str, fused: list[tuple[int, float]]) -> list[tuple[int, float]]:
-        pool = fused[: self.config.rerank_pool]
-        scores = self.reranker.score(
-            query_text(query, self.config.rerank_query), [self.dense.chunks[p].text for p, _ in pool]
+        return rerank_fused(
+            self.reranker, query_text(query, self.config.rerank_query), fused,
+            lambda p: self.dense.chunks[p].text, self.config.rerank_pool, self.config.rerank_granularity,
         )
-        reranked = sorted(zip((p for p, _ in pool), map(float, scores)), key=lambda x: (-x[1], x[0]))
-        floor = min((s for _, s in reranked), default=0.0)
-        tail = [(p, floor - 1.0 - i * 1e-6) for i, (p, _) in enumerate(fused[self.config.rerank_pool :])]
-        return reranked + tail
 
     def rank(self, queries: list[str], k: int) -> list[list[tuple[int, float]]]:
         results = []
