@@ -52,13 +52,22 @@ def sweep(pos: np.ndarray, neg: np.ndarray) -> list[dict]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--config", default="configs/baseline.yaml")
+    parser.add_argument("--from-run", help="reuse top-1 scores from a TRAIN run's per_query.jsonl")
     args = parser.parse_args()
 
     config = load_config(args.config)
-    retriever = Retriever.from_config(config)
-    pos_queries, neg_queries = load_train_queries(config)
-    pos = np.array([p[0].score for p in retriever.candidates(pos_queries, k=1)])
-    neg = np.array([p[0].score for p in retriever.candidates(neg_queries, k=1)])
+    if args.from_run:
+        path = config.resolve(args.from_run)
+        if "__train" not in path.as_posix():
+            parser.error("--from-run must point at a train run")
+        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        pos = np.array([r["top_score"] for r in rows if r["answerable"]])
+        neg = np.array([r["top_score"] for r in rows if not r["answerable"]])
+    else:
+        retriever = Retriever.from_config(config)
+        pos_queries, neg_queries = load_train_queries(config)
+        pos = np.array([p[0].score for p in retriever.candidates(pos_queries, k=1)])
+        neg = np.array([p[0].score for p in retriever.candidates(neg_queries, k=1)])
 
     def describe(x: np.ndarray) -> dict:
         q = np.percentile(x, [0, 10, 25, 50, 75, 90, 100])
