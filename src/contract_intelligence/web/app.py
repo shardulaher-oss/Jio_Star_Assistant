@@ -27,7 +27,16 @@ EXAMPLES = [
 ]
 
 
-@st.cache_resource(show_spinner="Loading embedding model and index...")
+SCORE_NAMES = {
+    "dense": "cosine similarity",
+    "graph": "graph score",
+    "bm25": "BM25 score",
+    "hybrid": "cross-encoder logit or RRF score",
+    "graph_hybrid": "cross-encoder logit or RRF score",
+}
+
+
+@st.cache_resource(show_spinner="Loading models and index...")
 def get_retriever(config_path: str) -> Retriever:
     return Retriever.from_config(load_config(config_path))
 
@@ -61,15 +70,18 @@ def main() -> None:
     configs = sorted(p.relative_to(PROJECT_ROOT).as_posix() for p in (PROJECT_ROOT / "configs").glob("*.yaml"))
     with st.sidebar:
         st.header("Settings")
-        config_path = st.selectbox("Pipeline config", configs, index=configs.index("configs/baseline.yaml"))
+        default = "configs/final.yaml" if "configs/final.yaml" in configs else configs[0]
+        config_path = st.selectbox("Pipeline config", configs, index=configs.index(default))
         base = load_config(PROJECT_ROOT / config_path)
         top_k = st.slider("Passages to return (top-k)", 1, 20, base.retrieval.top_k)
         abstain = st.checkbox("Abstain when nothing is relevant enough", value=True)
         default_threshold = base.retrieval.abstain_threshold or 0.0
+        # The score depends on the pipeline (cosine, graph score or cross-encoder logit),
+        # so the threshold is unbounded.
         threshold = st.number_input(
-            "Abstention threshold (cosine score)", -1.0, 1.0, float(default_threshold), 0.01,
-            format="%.4f", disabled=not abstain,
-            help="Calibrated on train queries. A similarity score, not a probability.",
+            f"Abstention threshold ({SCORE_NAMES.get(base.retrieval.pipeline, 'score')})",
+            value=float(default_threshold), step=0.01, format="%.4f", disabled=not abstain,
+            help="Calibrated on train queries for this config. A relevance score, not a probability.",
         )
         st.markdown("**Examples**")
         for example in EXAMPLES:
@@ -84,7 +96,7 @@ def main() -> None:
     cached = get_retriever(str(PROJECT_ROOT / config_path))
     # Per-request settings on top of the shared, cached model and index.
     config = with_overrides(base, top_k=top_k, threshold=threshold, no_abstain=not abstain)
-    result = Retriever(config, cached.encoder, cached.dense).search(question)
+    result = Retriever(config, cached.encoder, cached.dense, cached.ranker).search(question)
 
     if result.abstained:
         st.warning(f"**No relevant clause found.** {result.message}")
