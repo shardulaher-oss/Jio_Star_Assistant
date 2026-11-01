@@ -1,0 +1,1020 @@
+[
+  {
+    "query": "Consider the Service Agreement between BicycleTX Ltd and Nigel Crockett for Chief Business Officer Position; What is the expiration date of this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/BICYCLETHERAPEUTICSPLC_03_10_2020-EX-10.11-SERVICE AGREEMENT.txt",
+        "span": [
+          693,
+          859
+        ],
+        "answer": "Your employment shall commence on 26  September 2019 and shall continue unless and until either party gives notice to the other in accordance with paragraph 11 below."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Cooperation Agreement between HPIL ENERGYTECH Inc. and GINARES GROUP AG for Renewable Energy Projects; Can this contract be terminated for convenience, and under what conditions?",
+    "snippets": [
+      {
+        "file_path": "cuad/HPILHOLDING_01_07_2015-EX-99.1-COOPERATION AGREEMENT.txt",
+        "span": [
+          18172,
+          18336
+        ],
+        "answer": "The Parties may terminate its performance of related obligations under this Agreement within thirty (30) days of receipt by the Party of written termination notice."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Service Agreement between Theravance Biopharma UK Limited and Brett Haumann; What is the governing law for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/THERAVANCEBIOPHARMA,INC_05_08_2020-EX-10.2-SERVICE AGREEMENT.txt",
+        "span": [
+          32015,
+          32250
+        ],
+        "answer": "This Agreement and any dispute or claim arising out of or in connection with it or its subject matter or formation (including non-contractual disputes or claims) shall be governed by and construed in accordance with the law of England."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Service Agreement between Theravance Biopharma UK Limited and Brett Haumann; Does this contract provide for joint intellectual property ownership?",
+    "snippets": [
+      {
+        "file_path": "cuad/THERAVANCEBIOPHARMA,INC_05_08_2020-EX-10.2-SERVICE AGREEMENT.txt",
+        "span": [
+          16945,
+          17247
+        ],
+        "answer": "To the extent that the Company IP does not vest automatically in the Company the Executive hereby assigns all right, title and interest in the Company IP to the Company with full title guarantee by way of a present assignment of all future rights and shall otherwise hold them on trust for the Company."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Sponsorship Agreement between R. C. Boyd Enterprises, LLC and Cano Petroleum, Inc. for 'Honey Hole'; What is the governing law for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/CANOPETROLEUM,INC_12_13_2007-EX-10.1-Sponsorship Agreement.txt",
+        "span": [
+          4159,
+          4489
+        ],
+        "answer": "This Agreement shall be governed by and construed in accordance with the laws of the State of Texas and venue for  any legal action brought in State Court shall lie exclusively in Tarrant County, Texas and venue for any action brought in federal court shall  lie exclusively in the Northern District of Texas, Fort Worth Division."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Sponsorship Agreement between R. C. Boyd Enterprises, LLC and Cano Petroleum, Inc. for 'Honey Hole'; Is there a minimum commitment required under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/CANOPETROLEUM,INC_12_13_2007-EX-10.1-Sponsorship Agreement.txt",
+        "span": [
+          1116,
+          1204
+        ],
+        "answer": "The Company shall produce no less than forty (40) original episodes of the Show per year"
+      },
+      {
+        "file_path": "cuad/CANOPETROLEUM,INC_12_13_2007-EX-10.1-Sponsorship Agreement.txt",
+        "span": [
+          2160,
+          2302
+        ],
+        "answer": "The Company agrees to feature not less than two (2) persons designated by Cano as guests on not less than six (6)  separate episodes per year."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Sponsorship Agreement between Excite, Inc. and Vitamin Shoppe Industries Inc. for Promotion on WebCrawler Channels; Is there uncapped liability under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/VITAMINSHOPPECOMINC_09_13_1999-EX-10.26-SPONSORSHIP AGREEMENT.txt",
+        "span": [
+          54279,
+          54600
+        ],
+        "answer": "EXCEPT UNDER SECTIONS 13(a) AND 13(b), THE LIABILITY OF EITHER                  PARTY FOR DAMAGES OR ALLEGED DAMAGES HEREUNDER, WHETHER IN                  CONTRACT, TORT OR ANY OTHER LEGAL THEORY, IS LIMITED TO, AND                  WILL NOT EXCEED, THE AMOUNTS TO BE PAID BY CLIENT TO EXCITE                  HEREUNDER."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Is there a non-compete clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          20426,
+          21063
+        ],
+        "answer": "During the period beginning on the Effective Date and ending on the later of (i) the end of the Initial Term and (ii) the date falling two  years after completion of the most recent services provided by Rubicon under clause 7 (the \"Non-Competition Period\") and in the ISA Geographic  Area, as defined below, Rubicon agrees not to in any capacity, engage or have a financial interest in any ISA Competing Business, as defined  below, or provide managerial, supervisory, administrative, or financial services relating to any ISA Competing Business, including making available  any information or funding to any such ISA Competing Business."
+      },
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          21989,
+          22639
+        ],
+        "answer": "During the period beginning on the Effective Date and ending on the later of (i) the end of the Initial Term and (ii) the date falling two  years after completion of the most recent services provided by Rubicon under clause 7 (the \"Non-Competition Period\")  and in the Rubicon  Geographic Area, as defined below, ISA agrees not to in any capacity, engage or have a financial interest in any Rubicon Competing Business, as  defined below, or provide managerial, supervisory, administrative, or financial services relating to any Rubicon Competing Business, including  making available any information or funding to any such Rubicon Competing Business."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Is there an anti-assignment clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          36711,
+          37219
+        ],
+        "answer": "Neither Party shall transfer, assign or cede any rights or delegate any obligations hereunder, in whole or in part,  whether voluntarily or by operation of law, without the prior written consent of the other Party, which consent may be withheld at the other Party's  reasonable business discretion; provided, however, that in connection with a merger, sale or transfer of substantially all of the assets or stock of  one of the Parties that Party may provide for the assignee to be bound by the terms hereof."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Does this contract include any revenue or profit-sharing arrangements?",
+    "snippets": [
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          11393,
+          11877
+        ],
+        "answer": "In addition to the payments set forth in sections 4.2.1 and 4.2.2, above, ISA will pay Rubicon 30% of ISA's profits (defined as  gross revenues less costs directly incurred in the generation of such revenues) on projects for which Rubicon has provided Contract Services  after ISA has recouped any directly attributable start-up costs with respect to such project up to a cumulative maximum of £100,000 of such costs  associated with all such projects from the date of this agreement."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Are there any services to be provided after the termination of this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          12612,
+          12792
+        ],
+        "answer": "Each Party shall retain the financial records relating to all payments owed and/or paid under this Agreement for a period of six  years from the date such payment obligation arose."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Is there uncapped liability under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          32028,
+          32397
+        ],
+        "answer": "EXCEPT IN CONNECTION WITH A BREACH BY EITHER PARTY OF SECTION 8, NEITHER PARTY WILL  BE LIABLE FOR ANY SPECIAL, INDIRECT, CONSEQUENTIAL, EXEMPLARY, PUNITIVE OR INCIDENTAL DAMAGES ARISING OUT OF OR  RELATED TO THIS AGREEMENT, HOWEVER CAUSED AND UNDER ANY THEORY OF LIABILITY (INCLUDING NEGLIGENCE), EVEN IF SUCH PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES."
+      },
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          32504,
+          32693
+        ],
+        "answer": "EXCEPT IN CONNECTION WITH A BREACH BY EITHER PARTY OF SECTION 8, EACH PARTY'S LIABILITY FOR DAMAGES HEREUNDER (OTHER THAN IN RESPECT OF ANY CLAIM FOR MONIES DUE)  SHALL NOT EXCEED £200,000."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Is there a cap on liability under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          32028,
+          32396
+        ],
+        "answer": "EXCEPT IN CONNECTION WITH A BREACH BY EITHER PARTY OF SECTION 8, NEITHER PARTY WILL  BE LIABLE FOR ANY SPECIAL, INDIRECT, CONSEQUENTIAL, EXEMPLARY, PUNITIVE OR INCIDENTAL DAMAGES ARISING OUT OF OR  RELATED TO THIS AGREEMENT, HOWEVER CAUSED AND UNDER ANY THEORY OF LIABILITY (INCLUDING NEGLIGENCE), EVEN IF SUCH PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES"
+      },
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          32504,
+          32693
+        ],
+        "answer": "EXCEPT IN CONNECTION WITH A BREACH BY EITHER PARTY OF SECTION 8, EACH PARTY'S LIABILITY FOR DAMAGES HEREUNDER (OTHER THAN IN RESPECT OF ANY CLAIM FOR MONIES DUE)  SHALL NOT EXCEED £200,000."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Is there a covenant not to sue included in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          13844,
+          13911
+        ],
+        "answer": "Rubicon shall not contest ownership by ISA of any of the foregoing."
+      },
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          18173,
+          18240
+        ],
+        "answer": "ISA shall not contest ownership by Rubicon of any of the foregoing."
+      },
+      {
+        "file_path": "cuad/DUOSTECHNOLOGIESGROUP,INC_04_21_2009-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          20121,
+          20393
+        ],
+        "answer": "Either Party may terminate this Agreement upon ten Business Day's Notice to  the other Party in the event the other Party contests or challenges to a material degree any of the other Party's Intellectual Property rights referred  to in Sections 5.1, and 5.3, respectively."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Supply Agreement between Florida Chemical Company, LLC and Flotek Chemistry, LLC for Terpene Products; Is there an anti-assignment clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/FLOTEKINDUSTRIESINCCN_05_09_2019-EX-10.1-SUPPLY AGREEMENT.txt",
+        "span": [
+          16222,
+          16306
+        ],
+        "answer": "FCC may not assign or delegate its rights or obligations pursuant to this Agreement."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Marketing and Transportation Services Agreement between Purolator Courier Ltd. and Parcelway Courier Systems Canada Ltd. (Dynamex Inc.); Does this contract include an exclusivity agreement?",
+    "snippets": [
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          7970,
+          8101
+        ],
+        "answer": "Dynamex agrees not to provide sameday delivery services for any other        provider of next day or multiple day courier services."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Marketing and Transportation Services Agreement between Purolator Courier Ltd. and Parcelway Courier Systems Canada Ltd. (Dynamex Inc.); Can this contract be terminated for convenience, and under what conditions?",
+    "snippets": [
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          33227,
+          33332
+        ],
+        "answer": "Either Party may terminate this Agreement, without cause, by giving two         (2) years written notice."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Marketing and Transportation Services Agreement between Purolator Courier Ltd. and Parcelway Courier Systems Canada Ltd. (Dynamex Inc.); What happens in the event of a change of control of one of the parties in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          33342,
+          33500
+        ],
+        "answer": "In the event of a change in control of a Party, the other Party shall         have the right, upon written prior notice, to terminate this          Agreement."
+      },
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          47980,
+          48417
+        ],
+        "answer": "In the event this Agreement is terminated pursuant to the provisions of         paragraph 19.2, then the Party whose control has changed shall not         enter into an agreement with any other Party to provide services similar         to those provided herein or to provide its services similar to those         provided for herein without an agreement, for a period of twelve (12)         months from the effective date of termination."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Marketing and Transportation Services Agreement between Purolator Courier Ltd. and Parcelway Courier Systems Canada Ltd. (Dynamex Inc.); Is there an anti-assignment clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          38299,
+          38573
+        ],
+        "answer": "Neither Party shall sell, assign, subcontract, transfer or dispose of         this Agreement or any part thereof, without the prior written consent of         the other Party or otherwise enter into an agreement with any other         Party for Services contemplated herein."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Marketing and Transportation Services Agreement between Purolator Courier Ltd. and Parcelway Courier Systems Canada Ltd. (Dynamex Inc.); What are the insurance requirements under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          19106,
+          20201
+        ],
+        "answer": "Each Party shall purchase and maintain, at its own expense, the        following insurance coverages:\n\n    (a)     cargo liability insurance, subject to a combined single limit of                not less than One Hundred Thousand dollars ($100,000.00)                inclusive per occurrence. The other Party shall be named as an                additional insured and the policy shall contain a cross                liability clause;\n\n    (b)     automobile, non-owned automobile, fleet, comprehensive general,                public and property liability insurance with a limit of not less                than Two Million dollars ($2,000,000.00) inclusive of bodily                injury and property damage for any one occurrence arising out of                one (1) cause. The policy shall cover all non-air operations,                non-owned automobile, contractual liability and liability                specifically assumed under this Agreement. The other party shall                be named as an additional insured and the policy shall contain a                cross liability clause;"
+      },
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          20210,
+          20643
+        ],
+        "answer": "Each Party shall deliver to the other, prior to commencing to provide        the Services and thereafter, annually, a certificate or certificates of        insurance evidencing that the required insurance coverages as        provided for in paragraph 9.1 are in effect and that each Party shall be        given thirty (30) days prior written notice of cancellation or         expiry of or material change to such insurance coverages."
+      },
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          20883,
+          21314
+        ],
+        "answer": "Each Party shall maintain the insurance coverages provided for in        paragraph 9.1 hereof, in full force and effect during the term of        this Agreement and covenants that nothing shall be done whereby any        policy will be cancelled and shall pay all renewal premiums thereon on or        before the due date and shall forthwith furnish the other Party with        copies of certificates of insurance of such renewals."
+      },
+      {
+        "file_path": "cuad/DYNAMEXINC_06_06_1996-EX-10.4-TRANSPORTATION SERVICES AGREEMENT.txt",
+        "span": [
+          21856,
+          22071
+        ],
+        "answer": "Each Party shall ensure that any subcontractor or other party with whom        it contracts in providing the Services shall carry adequate        insurance coverage, but not less than that provided in paragraph 9.1."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Co-Branding Agreement between PC Quote, Inc. and A.B. Watley, Inc. for Market Data Software; Is there an anti-assignment clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PcquoteComInc_19990721_S-1A_EX-10.11_6377149_EX-10.11_Co-Branding Agreement1.txt",
+        "span": [
+          14780,
+          14910
+        ],
+        "answer": "This Agreement or any rights or obligations granted hereunder may not be assigned by ABW without the prior written consent of PCQ."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Promotion Agreement between Depomed, Inc. and King Pharmaceuticals, Inc. for Glumetza; Is there a non-compete clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          28888,
+          29204
+        ],
+        "answer": "Except as expressly contemplated by this Agreement (including Article XIII hereof) and subject to Section 13.1 hereof, King shall not promote, market or distribute any product containing metformin hydrochloride as the sole active ingredient in the Territory during the Term of this Agreement, other than the Product."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Promotion Agreement between Depomed, Inc. and King Pharmaceuticals, Inc. for Glumetza; Does this contract include any right of first refusal, right of first offer, or right of first negotiation?",
+    "snippets": [
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          144427,
+          146183
+        ],
+        "answer": "Depomed agrees to grant and hereby grants to King an exclusive option (exercisable at King's sole discretion by providing written notice of intent at any time, but in no event later than 180 days after the Effective Date) to obtain an exclusive license in the Territory to certain of Depomed's proprietary drug delivery technology in combination with both metformin hydrochloride and any other active pharmaceutical ingredients (a \"Combination Product License\"). If King notifies Depomed in writing within 180 days after the Effective Date that King desires to exercise its option to obtain a Combination Product License, King and Depomed shall promptly commence good-faith negotiations regarding a definitive agreement providing for the Combination Product License, for a period of 60 days or such longer period as may be mutually agreed upon by the parties in writing; and it is agreed that, as part of such good faith negotiations, the parties will discuss, for inclusion in any definitive agreement, appropriate non-compete obligations for each party with respect to any product containing metformin hydrochloride as an active pharmaceutical ingredient. If Depomed and King fail to enter into such a definitive agreement during such period, then Depomed shall thereafter have the right to negotiate and enter into one or more agreements with Third Parties related to Depomed's proprietary drug delivery technology in combination with both metformin hydrochloride and other active pharmaceutical ingredients; provided that, for a period of 6 months, any such agreement may not be on terms and conditions materially more favorable to the Third Party than the terms and conditions last offered by King prior to the termination of discussions with Depomed."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          147380,
+          147892
+        ],
+        "answer": "Depomed shall notify King in writing in the event that Depomed desires to divest itself of its rights to the Product in the Territory (e.g., by asset sale or product license to a Third Party), or of its rights in the Territory to a product owned or controlled by Depomed containing metformin and another active pharmaceutical ingredient in combination with Depomed's proprietary drug delivery technology incorporated within the Product (currently referred to as the AcuForm technology) (a \"Combination Product\")."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          148461,
+          149594
+        ],
+        "answer": "If King is interested in obtaining the Metformin Product Rights, it shall so notify Depomed in writing prior to the expiration of the Evaluation Period, and upon Depomed's receipt of such notice King and Depomed shall promptly commence good-faith negotiations, for a period of 30 days and such longer period as may be mutually agreed upon by the parties in writing in the event the parties have made material progress in the negotiations (the \"Negotiation Period\"), regarding the commercially reasonable terms of an agreement pursuant to which King shall obtain the Metformin Product Rights. If Depomed and King fail to enter into an agreement for the Metformin Product Rights prior to the expiration of the Negotiation Period, then Depomed shall thereafter have the right to negotiate and enter into an agreement with a Third Party granting the Metformin Product Rights to a Third Party; provided that, for a period of 6 months, any such agreement may not be on terms and conditions materially more favorable to the Third Party than the terms and conditions last offered by King prior to the termination of discussions with Depomed."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Promotion Agreement between Depomed, Inc. and King Pharmaceuticals, Inc. for Glumetza; Is there a minimum commitment required under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          42251,
+          42711
+        ],
+        "answer": "From and after the Promotion Commencement Date, King shall perform at least [***] PDEs per calendar year, with such amount prorated over the initial and final calendar years of the Term if either such year is a partial year. In fulfilling its obligations under this Section 4.1(b), King will perform [***], as follows: King will perform no less than an average of [***], with such reach and frequency as the JCC determines as part of the Annual Plan each year."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          45281,
+          45804
+        ],
+        "answer": "King agrees that from and after the Promotion Commencement Date, the King Sales Force will be staffed with at least [***] full-time Sales Representatives (subject to vacancies consistent with average vacancy rate experienced by King across its total sales force) who are actively promoting the Product in accordance with the Launch Plan or Annual Plan (the \"Minimum Sales Force Level\"); provided that King may meet such requirement to actively promote the Product by promoting the Product through P2 Details and P3 Details."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          112969,
+          113347
+        ],
+        "answer": "In the event that King does not perform the PDE Minimum in any Agreement Quarter (the difference between such PDE Minimum and the number of PDEs actually conducted, the \"PDE Shortfall\"), King will have until the end of the Agreement Quarter immediately following to cure its failure by providing a sufficient number of excess PDEs in the immediately following Agreement Quarter."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          113354,
+          113644
+        ],
+        "answer": "If King does not perform, in the aggregate, two times the PDE Minimum in any two consecutive Agreement Quarters, Depomed may demand that King cure such default by (A) [***] and (B) [***], in each case, prior to the end of the next succeeding Agreement Quarter following notice from Depomed."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          113652,
+          113911
+        ],
+        "answer": "Upon the third failure by King to meet the PDE Minimum during any six consecutive Agreement Quarters, Depomed shall have the right to [***] or demand that King shall cure such default in the same manner outlined in clause (i) above for the first such default."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          113917,
+          114282
+        ],
+        "answer": "If, as of the end of any period of the immediately previous four consecutive Agreement Quarters, Promotion Net Sales for such period are less than $[***], either party shall have the right to terminate this Agreement on 120 days' prior written notice to the other party, which notice may not be given before the third anniversary of the Promotion Commencement Date."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Promotion Agreement between Depomed, Inc. and King Pharmaceuticals, Inc. for Glumetza; Are there any services to be provided after the termination of this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          103074,
+          103212
+        ],
+        "answer": "This right to audit shall extend throughout the term of this Agreement and for one year after expiration or termination of this Agreement."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          105475,
+          105918
+        ],
+        "answer": "Following the termination of this Agreement at the conclusion of the initial five year term or any additional term, for each of the eight full calendar quarters following such termination, Depomed shall pay to King an amount equal to, in each of the first four such calendar quarters, [***]% of the Net Sales for each such quarter and, in each of the fifth through eighth such calendar quarters, [***]% of such Net Sales for each such quarter."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          151361,
+          152005
+        ],
+        "answer": "During the Term and for a period of two (2) years after any expiration or termination of this Agreement, each party shall maintain (i) a commercial general liability insurance policy or policies with minimum limits of $[***] per occurrence and $[***] in the aggregate on an annual basis and (ii) a product liability insurance policy or policies with minimum limits of $[***] per occurrence and $[***] in the aggregate on an annual basis; provided that the minimum product liability policy limits set forth above shall be increased to at least $[***] per occurrence and $[***] in the aggregate on an annual basis no later than December 31, 2006."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Promotion Agreement between Depomed, Inc. and King Pharmaceuticals, Inc. for Glumetza; Is there a covenant not to sue included in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          64934,
+          65583
+        ],
+        "answer": "King recognizes Depomed's title to the Depomed Trademarks, and shall not at any time, during or after the Term, do or knowingly suffer to be done any act or thing which will in any way impair the rights of Depomed in or to the Depomed Trademarks. King acknowledges and agrees that it shall not acquire and shall not claim any title to the Depomed Trademarks adverse to Depomed by virtue of the rights granted under this Agreement or through King's use of the Depomed Trademarks, it being the intention of the parties that all goodwill and improved reputation generated by King and use of the Depomed Trademarks shall inure to the benefit of Depomed."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          66237,
+          66474
+        ],
+        "answer": "Depomed recognizes King's title to the King Trademarks, and shall not at any time, during or after the Term, do or knowingly suffer to be done any act or thing which will in any way impair the rights of King in or to the King Trademarks."
+      },
+      {
+        "file_path": "cuad/KINGPHARMACEUTICALSINC_08_09_2006-EX-10.1-PROMOTION AGREEMENT.txt",
+        "span": [
+          66571,
+          66967
+        ],
+        "answer": "Depomed acknowledges and agrees that it shall not acquire and shall not claim any title to the King Trademarks adverse to King by virtue of the rights granted under this Agreement or through Depomed's use of the King Trademarks, it being the intention of the parties that all goodwill and improved reputation generated by Depomed and use of the King Trademarks shall inure to the benefit of King."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Gas Transportation Agreement between PennTex North Louisiana Operating, LLC and MRD Operating LLC; What is the renewal term for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PenntexMidstreamPartnersLp_20150416_S-1A_EX-10.4_9042833_EX-10.4_Transportation Agreement.txt",
+        "span": [
+          49279,
+          49722
+        ],
+        "answer": "This Agreement shall commence on the Effective Date and continue in full force and effect until the end of the fifteenth (15th) Contract Year, and shall continue in full force and effect thereafter until terminated by either Party by providing thirty (30) calendar days' prior written notice of termination to the other Party (such fifteen (15) Contract Year period, as may be further extended as provided herein is referred to as the \"Term\")."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Gas Transportation Agreement between PennTex North Louisiana Operating, LLC and MRD Operating LLC; Is there an anti-assignment clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PenntexMidstreamPartnersLp_20150416_S-1A_EX-10.4_9042833_EX-10.4_Transportation Agreement.txt",
+        "span": [
+          45699,
+          45974
+        ],
+        "answer": "This Agreement may not be assigned, disposed of, alienated or otherwise transferred by either Party, in whole or in part, without the prior written consent of the other Party, which consent shall not be unreasonably withheld, conditioned or delayed, except as provided below."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Gas Transportation Agreement between PennTex North Louisiana Operating, LLC and MRD Operating LLC; Is there a covenant not to sue included in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PenntexMidstreamPartnersLp_20150416_S-1A_EX-10.4_9042833_EX-10.4_Transportation Agreement.txt",
+        "span": [
+          38269,
+          38959
+        ],
+        "answer": "CUSTOMER SHALL RELEASE, DEFEND, INDEMNIFY AND HOLD HARMLESS TRANSPORTER AND TRANSPORTER'S MEMBERS, DIRECTORS, OFFICERS, AGENTS AND EMPLOYEES FROM AND AGAINST ANY AND ALL SUITS, ACTIONS, CAUSES OF ACTION, CLAIMS, DEMANDS, LOSSES, LIABILITIES AND EXPENSES (INCLUDING, WITHOUT LIMITATION, INTEREST, COURT COSTS, REASONABLE ATTORNEYS' FEES AND EXPENSES, AND OTHER COSTS OF DEFENSE) (COLLECTIVELY, \"CLAIMS\") RELATING TO, CAUSED BY OR ARISING OUT OF CUSTOMER'S BREACH OF ANY REPRESENTATION, WARRANTY OR COVENANT MADE BY CUSTOMER HEREUNDER, BUT NOT TO THE PROPORTIONATE EXTENT THAT SUCH CLAIM IS CAUSED BY OR RESULTS FROM OR ARISES OUT OF THE GROSS NEGLIGENCE OR WILLFUL MISCONDUCT OF TRANSPORTER."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; What is the expiration date of this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          3388,
+          3545
+        ],
+        "answer": "Unless earlier terminated in accordance with the provisions hereof, the initial term of this Agreement (\"Term\") is the Effective Date through March 15, 2022."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; Is there a non-disparagement clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          13350,
+          13670
+        ],
+        "answer": "PAPA JOHN'S shall not, during the Term or at any time thereafter: (I) defame or disparage CELEBRITY or the Personality Rights (or any portion thereof), nor shall PAPA JOHN'S place the CELEBRITY or the Personality Rights (or any portion thereof) in a negative light, whether in connection with this Agreement or otherwise"
+      },
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          61086,
+          61257
+        ],
+        "answer": "All Parties agree not to disparage or make derogatory comments, verbal or written, regarding the other Party during the Term of the Agreement, and for one year thereafter."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; Does this contract include any volume restrictions?",
+    "snippets": [
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          17729,
+          17939
+        ],
+        "answer": "At least eight (8) \"Service Days\", including but not limited to:\n\n1. Production days. Up to four (4) production days (defined as a maximum of eight (8) consecutive hours each), with PAPA JOHN'S creative agency."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; What licenses are granted under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          3851,
+          4268
+        ],
+        "answer": "In consideration of the remuneration to be paid to ABG pursuant hereto and subject to the conditions and limitations contained herein, ABG grants to PAPA JOHN'S the non-transferrable, non-assignable, non-sublicensable, indivisible right and license solely during the Term of the Agreement and within the Territory to use the Celebrity Endorsement, in each instance, subject to ABG's Approval (as hereinafter defined)."
+      },
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          28102,
+          28889
+        ],
+        "answer": "PAPA JOHN'S hereby grants to ABG and CELEBRITY, a royalty-free, perpetual, irrevocable, fully- paid, assignable, transferable, sublicensable right and license to utilize the Materials, in their entirety or any portions thereof, in all media now known or hereafter developed, throughout the universe (individually and collectively, \"PJ Rights\") as follows: (i) on or in connection the performance of the Services hereunder; (ii) in connection with historical and archival purposes (e.g., documentary, commentary, corporate retrospective, historical files on websites of ABG), so-called business-to-business uses and other non-commercial purposes; and (iii) for industry recognition purposes (e.g., award competition submissions); in each case, in all media now known or hereafter devised."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; Are there any services to be provided after the termination of this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          47413,
+          48223
+        ],
+        "answer": "Upon expiration or termination of this Agreement by PAPA JOHN'S (but not in the event of termination by ABG), and subject to PAPA JOHN'S ongoing compliance with the terms and conditions of this Agreement, PAPA JOHN'S shall have the following rights to use the Celebrity Endorsement solely as follows: (i) for a period of six (6) months following the effective date of expiration or termination, PAPA JOHN'S shall have the right to continue to use, display and distribute copies of Materials which bear the Celebrity Endorsement and which were printed and published, or irrevocably booked for publication or display with a third party, prior to the effective date of expiration or termination; and (ii) PAPA JOHN'S shall have the right, without restriction, to the in-house, non-commercial use of any Materials."
+      },
+      {
+        "file_path": "cuad/PapaJohnsInternationalInc_20190617_8-K_EX-10.1_11707365_EX-10.1_Endorsement Agreement.txt",
+        "span": [
+          51519,
+          52259
+        ],
+        "answer": "If this Agreement is terminated by ABG for any of the reasons provided in Section 7.B. above, then CELEBRITY shall be entitled to immediately vest in all of the RSUs for the eighteen (18) months following the effective date of termination (including, without limitation, any balance of unvested RSUs that were due to vest as of the effective date of termination, in addition to any and all of the RSUs that would have vested during the next eighteen (18) months but for the termination); provided, however, that in the event there is less than eighteen (18) months remaining in the Term as of the effective date of such termination, then any and all of the balance of the RSUs shall vest immediately as of the effective date of termination."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Endorsement Agreement between Holiday RV Superstores, Inc. and Affinity Group, Inc. for Good Sam Branding; What is the governing law for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/HOLIDAYRVSUPERSTORESINC_04_15_2002-EX-10.13-ENDORSEMENT AGREEMENT.txt",
+        "span": [
+          10347,
+          10528
+        ],
+        "answer": "This Agreement has been made in the State of California and shall be governed by and construed in accordance with the laws thereof without regard to principles of conflicts of laws."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Endorsement Agreement between Holiday RV Superstores, Inc. and Affinity Group, Inc. for Good Sam Branding; Can this contract be terminated for convenience, and under what conditions?",
+    "snippets": [
+      {
+        "file_path": "cuad/HOLIDAYRVSUPERSTORESINC_04_15_2002-EX-10.13-ENDORSEMENT AGREEMENT.txt",
+        "span": [
+          5116,
+          5490
+        ],
+        "answer": "In the event that the Company desires to terminate the Agreement prior to the Termination Date, it shall provide AGI with at least 60 days prior written notice of its intention to terminate this Agreement and this Agreement shall so terminate following the expiration of this 60-day period, without any further responsibility by either Party except as provided in Section 5."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Business Affiliate Agreement between Dr. George D. Green and UNION DENTAL CORP.; What are the audit rights under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/UnionDentalHoldingsInc_20050204_8-KA_EX-10_3345577_EX-10_Affiliate Agreement.txt",
+        "span": [
+          3636,
+          4076
+        ],
+        "answer": "Make available,  during normal business hours, at a Party=s offices      all records, books, agreements, policies and procedures relating to the use      and/or  disclosure  of  Confidential  Information  that is  subject to this      Agreement,  to the other  Party  within ten (10) days of a Party's  written      request,  for the purpose of  enabling a Party to verify the other  Party=s      compliance with the terms of this Agreement"
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Support and Maintenance Agreement between On2 Technologies, Inc. and Wildform, Inc.; How is intellectual property ownership assigned in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/ON2TECHNOLOGIES,INC_11_17_2006-EX-10.3-SUPPORT AND MAINTENANCE AGREEMENT.txt",
+        "span": [
+          22240,
+          22686
+        ],
+        "answer": "The Incorporated Technology Works shall be the sole property of On2, and all right, title and interest therein shall vest solely in On2 and shall be deemed to be a work made for hire. To the extent that title to any of the Incorporated Technology Works may not, by operation of law, vest in On2 or such works may not be considered works made for hire, Wildform hereby irrevocably assigns to On2 all rights, title and interest in and to such works"
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Walabot HOME Reseller Agreement between Vayyar Imaging Ltd. and Inde Living Holdings, Inc.; What is the notice period required to terminate the renewal?",
+    "snippets": [
+      {
+        "file_path": "cuad/HealthcareIntegratedTechnologiesInc_20190812_8-K_EX-10.1_11776966_EX-10.1_Reseller Agreement.txt",
+        "span": [
+          13593,
+          13737
+        ],
+        "answer": "Following the Initial Term, either Party may terminate this Agreement without cause upon written notice to the other Party of at least 3 months."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Walabot HOME Reseller Agreement between Vayyar Imaging Ltd. and Inde Living Holdings, Inc.; What is the governing law for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/HealthcareIntegratedTechnologiesInc_20190812_8-K_EX-10.1_11776966_EX-10.1_Reseller Agreement.txt",
+        "span": [
+          19144,
+          19603
+        ],
+        "answer": "This Agreement shall be governed by the laws of the State of New York and all disputes and controversies arising out of or in connection with the Agreement shall be brought exclusively before the competent courts in New York County, New York; provided however that judgment shall be enforceable in any country and that nothing in this Section shall prevent or restrict either Party from seeking interim relief in any competent jurisdiction as it may deem fit."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Walabot HOME Reseller Agreement between Vayyar Imaging Ltd. and Inde Living Holdings, Inc.; Can this contract be terminated for convenience, and under what conditions?",
+    "snippets": [
+      {
+        "file_path": "cuad/HealthcareIntegratedTechnologiesInc_20190812_8-K_EX-10.1_11776966_EX-10.1_Reseller Agreement.txt",
+        "span": [
+          13593,
+          13737
+        ],
+        "answer": "Following the Initial Term, either Party may terminate this Agreement without cause upon written notice to the other Party of at least 3 months."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Walabot HOME Reseller Agreement between Vayyar Imaging Ltd. and Inde Living Holdings, Inc.; What licenses are granted under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/HealthcareIntegratedTechnologiesInc_20190812_8-K_EX-10.1_11776966_EX-10.1_Reseller Agreement.txt",
+        "span": [
+          2109,
+          2426
+        ],
+        "answer": "In connection with the foregoing appointment, Supplier hereby grants Reseller a non-transferable, revocable, limited right to resell, market, promote, stimulate interest in, and solicit Orders by Customers and/or End Users in the Territory for the Products and to provide services in connection with those activities."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Walabot HOME Reseller Agreement between Vayyar Imaging Ltd. and Inde Living Holdings, Inc.; Are there any services to be provided after the termination of this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/HealthcareIntegratedTechnologiesInc_20190812_8-K_EX-10.1_11776966_EX-10.1_Reseller Agreement.txt",
+        "span": [
+          15044,
+          15960
+        ],
+        "answer": "In addition to the foregoing, if, at the time of termination of this Agreement, Reseller shall have additional Product units in its inventory and is able to sell them to Customers and/or End Users (including, without limitation, any Product units for which Reseller has or is obligated to pay the Supplier the purchase price therefor but which have not yet been delivered to the Reseller by Supplier, which Supplier hereby agrees to either deliver as otherwise contemplated by this Agreement as if it had not terminated or to refund the purchase price therefor), then the licenses and appointments described in Section 2 shall remain in effect with respect to such unsold Product units (and such Section 2 shall not terminate) until the earlier of (i) the date on which the last Product in Reseller's inventory is sold to a Customer and/or End User, or (ii) 1 year from the date of the termination of this Agreement."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Joint Venture Agreement between MJ Syndicated, Inc. and Simply Herbals for Manufacturing and Selling Health-Related Products; What is the expiration date of this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/MJBIOTECH,INC_12_06_2018-EX-99.01-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          1341,
+          1491
+        ],
+        "answer": "The Joint Venture is a fixed term Joint Venture beginning November 27, 2018 and ending November 30th, 2019 or as otherwise provided in this Agreement."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Joint Venture Agreement between MJ Syndicated, Inc. and Simply Herbals for Manufacturing and Selling Health-Related Products; Is there an anti-assignment clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/MJBIOTECH,INC_12_06_2018-EX-99.01-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          14636,
+          14717
+        ],
+        "answer": "Title to all Joint Venture Property will remain in the name of the Joint Venture."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Joint Venture Agreement between MJ Syndicated, Inc. and Simply Herbals for Manufacturing and Selling Health-Related Products; Is there a cap on liability under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/MJBIOTECH,INC_12_06_2018-EX-99.01-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          18787,
+          19063
+        ],
+        "answer": "A Participant will not be liable to the Joint Venture, or to any other Participant, for any mistake or error in judgment or for any act or omission done in good faith and believed to be within the scope of authority conferred or implied by this Agreement or the Joint Venture."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Non-Competition Agreement and Right of First Offer between Glamis Gold Ltd. and Western Copper Corporation; What is the governing law for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/WESTERN COPPER - NON-COMPETITION AGREEMENT.txt",
+        "span": [
+          15318,
+          15537
+        ],
+        "answer": "4.8 This Agreement will be governed exclusively by and construed in accordance  with the laws of the Province of British Columbia, and the parties attorn to the exclusive  jurisdiction of the Courts of British Columbia."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Joint Venture Agreement between Tate & Lyle Fermentation Products Ltd. and Igene Biotechnology, Inc. for Astaxanthin Production; What is the governing law for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/IGENEBIOTECHNOLOGYINC_05_13_2003-EX-1-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          57535,
+          57701
+        ],
+        "answer": "This Agreement shall be governed and construed in accordance with the laws of the State of Delaware, without reference to the conflicts of laws principles thereunder."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Joint Venture Agreement between Tate & Lyle Fermentation Products Ltd. and Igene Biotechnology, Inc. for Astaxanthin Production; Does this contract include any right of first refusal, right of first offer, or right of first negotiation?",
+    "snippets": [
+      {
+        "file_path": "cuad/IGENEBIOTECHNOLOGYINC_05_13_2003-EX-1-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          25059,
+          25887
+        ],
+        "answer": "If, after the date of this Agreement and continuing as long as either Party is a partner, member, or shareholder of the Operating Company, such Party or any of its Affiliates receives or discovers any opportunity to use Astaxanthin as a Neutraceutical (a \"Neutraceutical Opportunity\"), including without limitation developing or completing the development of, or discovering, or acquiring proprietary rights over, a product or process that involves the use of Astaxanthin as a Neutraceutical, such Party shall (or shall cause its Affiliate to) present such opportunity to the Operating Company, providing the Operating Company with such narrative description and budgetary and other information as such Party (or its Affiliates) may have generated or gathered to the extent necessary to evaluate such Neutraceutical Opportunity."
+      },
+      {
+        "file_path": "cuad/IGENEBIOTECHNOLOGYINC_05_13_2003-EX-1-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          27242,
+          28070
+        ],
+        "answer": "If, after the date of this Agreement and continuing as long as a Party is a partner, member, or shareholder of the Operating Company, the Joint Venture develops or completes the development of, or discovers, or acquires proprietary rights over, a process or product which at, or after, the time of its development, discovery or acquisition has, or might have, some application outside of the Field of Agreement, then the appropriate entity of the Joint Venture shall offer to license the use of the process or product (or the production thereof) for such application to each of the Parties on reasonable commercial terms (including, without limitation, the possible payment of royalties at market rates) taking into account the time and money spent by the Joint Venture and taking into account other relevant commercial factors."
+      },
+      {
+        "file_path": "cuad/IGENEBIOTECHNOLOGYINC_05_13_2003-EX-1-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          40245,
+          40959
+        ],
+        "answer": "If either Party has received a Third Party Offer that it intends to accept (the \"Offer\"), such Party (the \"Selling Party\") shall notify the other Party (the \"Offeree\") of the Offer, which notice shall include a copy of the Offer and any other information necessary to enable the Offeree to evaluate reasonably the Offer and the potential purchaser. The Offeree shall have thirty (30) days after receipt of the notice from the Selling Party (the \"Option Period\") to elect either (i) to purchase the Selling Party's interest in the Operating Company or (ii) to sell the Offeree's interest in the Operating Company to the Selling Party, in either case on the same terms and conditions as those contained in the Offer."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Joint Venture Agreement between Tate & Lyle Fermentation Products Ltd. and Igene Biotechnology, Inc. for Astaxanthin Production; What are the audit rights under this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/IGENEBIOTECHNOLOGYINC_05_13_2003-EX-1-JOINT VENTURE AGREEMENT.txt",
+        "span": [
+          62830,
+          62977
+        ],
+        "answer": "From time to time, each Party shall have the right to have its own internal or external auditors review the books and records of the Joint Venture."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Sucampo Pharmaceuticals, Inc., Sucampo Pharma, LLC, and R-Tech Ueno, Ltd.; What is the governing law for this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/SUCAMPOPHARMACEUTICALS,INC_11_04_2015-EX-10.2-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          52644,
+          52760
+        ],
+        "answer": "The construction, validity and performance of this Agreement shall be governed in all respects by the laws of Japan."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Sucampo Pharmaceuticals, Inc., Sucampo Pharma, LLC, and R-Tech Ueno, Ltd.; Is there an anti-assignment clause in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/SUCAMPOPHARMACEUTICALS,INC_11_04_2015-EX-10.2-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          55169,
+          55560
+        ],
+        "answer": "No Party shall assign or transfer or purport to assign or transfer (whether by operation of Law or otherwise) any of its rights, interests or obligations hereunder without the prior written consent of the other Party; provided, that Acquiror may assign this Agreement and its rights and interests herein without any such consent as collateral to the Lenders in connection with the Financing."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Strategic Alliance Agreement between Sucampo Pharmaceuticals, Inc., Sucampo Pharma, LLC, and R-Tech Ueno, Ltd.; Are there any third-party beneficiaries designated in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/SUCAMPOPHARMACEUTICALS,INC_11_04_2015-EX-10.2-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "span": [
+          61284,
+          61470
+        ],
+        "answer": "It is expressly agreed by the Parties that the Lenders shall be third party beneficiaries of Section 4.09, Section 6.03, Section 8.02(b), Section 8.04, Section 8.05 and this Section 8.13"
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "query": "Consider the Marketing Agreement between Loop Industries, Inc. and Indorama Loop Technologies, LLC for Product Supply and Development; Is there a clause preventing the solicitation of customers in this contract?",
+    "snippets": [
+      {
+        "file_path": "cuad/Loop Industries, Inc. - Marketing Agreement.txt",
+        "span": [
+          11849,
+          13055
+        ],
+        "answer": "Joint Venture Company shall not, and shall cause each SPV and each of their Affiliates not to, directly or indirectly, market or sell any Loop-branded Products or any Products produced using Licensed Subject Matter to any person or entity except to Authorized Customers pursuant to a Transferred Contract (the \"Marketing and Sale Restriction\"); provided that if at any time during the term of this Agreement, Loop has delivered Proposed Contract Notices that result in Transferred Contracts having binding purchase and supply obligations for less than [***] of the then existing actual production capacity of a Licensed Facility (taking into account Joint Venture Company's reasonable forecasts based on customer requirements, seasonal variations, and other factors) in the subsequent three months (the \"[***]\"), Joint Venture Company may market and solicit orders for Licensed Products produced in such Licensed Facility directly to customers and potential customers and enter into supply contracts for the sale of Loop-branded Products or any Products produced using Licensed Subject Matter produced in such Licensed Facility with customers without being restricted by the Marketing and Sale Restriction."
+      }
+    ],
+    "split": "test",
+    "answerable": true
+  }
+]

@@ -19,7 +19,6 @@ build/
 
 # Downloaded benchmark data and generated indexes
 data/raw/
-data/processed/
 artifacts/
 indexes/
 cache/
