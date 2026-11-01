@@ -155,13 +155,13 @@ def save_run(config: PipelineConfig, summary: dict, per_query: list[dict], out_r
     return directory
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Evaluate a configuration on one split.")
     parser.add_argument("--config", default="configs/baseline.yaml")
     parser.add_argument("--split", choices=("train", "test"), default="train")
     parser.add_argument("--out", default="experiments/runs")
     parser.add_argument("--reason", default="", help="why test is being run (required for test)")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     if args.split == "test" and not args.reason:
         parser.error("--reason is required for test runs; test is for final reporting only")
 

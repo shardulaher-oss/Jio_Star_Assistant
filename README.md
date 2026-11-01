@@ -86,6 +86,34 @@ To recalibrate the threshold (train queries and train unanswerable queries only)
 .\.venv\Scripts\python.exe -m contract_intelligence.retrieval.calibrate --config configs/baseline.yaml
 ```
 
+## Interfaces
+
+Both interfaces call the same `Retriever`, so they return identical results for the
+same config.
+
+**Web app (Streamlit):**
+
+```powershell
+.\.venv\Scripts\streamlit.exe run src/contract_intelligence/web/app.py
+```
+
+Open http://localhost:8501. The sidebar selects the config, top-k and abstention
+threshold. Each result shows the source contract, character offsets and cosine score,
+plus an expander that highlights the passage in its surrounding contract text.
+
+**CLI:**
+
+```powershell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m contract_intelligence.cli query "Who owns the IP in derivative works?"
+.\.venv\Scripts\python.exe -m contract_intelligence.cli query "governing law" --top-k 3 --json
+.\.venv\Scripts\python.exe -m contract_intelligence.cli query "termination for convenience" --no-abstain
+.\.venv\Scripts\python.exe -m contract_intelligence.cli build-index --config configs/baseline.yaml
+.\.venv\Scripts\python.exe -m contract_intelligence.cli evaluate --split train
+```
+
+`--config` goes before the subcommand, e.g. `cli --config configs/other.yaml query "..."`.
+
 ## Evaluation
 
 ```powershell
