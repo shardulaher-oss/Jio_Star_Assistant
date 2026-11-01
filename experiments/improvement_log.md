@@ -19,6 +19,9 @@ Primary metric: Recall@5. Guardrails: P@5 drop <= 0.005, balanced abstention acc
 | 10 | candidate | rules (improvement/propose.py) | `chunking.chunk_size=1000` | 0.389 | 0.588 | 0.678 | 0.794 | 0.074 | 0.581 | 0.787 | 9.3% | +0.018 | 0.73 | rejected |
 | 11 | candidate | rules (improvement/propose.py) | `graph.abstain_when_unrouted=True` | 0.367 | 0.600 | 0.660 | 0.749 | 0.088 | 0.573 | 0.781 | 17.1% | +0.000 | 0.00 | rejected |
 | 12 | candidate | rules (improvement/propose.py) | `hybrid.graph_pool=100`, `hybrid.bm25_pool=100` | 0.367 | 0.600 | 0.660 | 0.750 | 0.088 | 0.574 | 0.775 | 15.0% | +0.000 | 0.00 | rejected |
+| 13 | candidate | rules (improvement/propose.py) | `hybrid.rerank_granularity=sentence_max` | 0.443 | 0.625 | 0.674 | 0.763 | 0.088 | 0.622 | 0.813 | 10.7% | +0.014 | 0.76 | accepted |
+| 14 | candidate | rules (improvement/propose.py) | `hybrid.reranker_model=cross-encoder/ms-marco-MiniLM-L12-v2`, `hybrid.rerank_granularity=sentence_max` | 0.446 | 0.646 | 0.681 | 0.751 | 0.087 | 0.635 | 0.792 | 15.0% | +0.007 | 0.68 | rejected |
+| 15 | candidate | rules (improvement/propose.py) | `hybrid.reranker_model=mixedbread-ai/mxbai-rerank-xsmall-v1` | 0.490 | 0.670 | 0.718 | 0.796 | 0.098 | 0.684 | 0.759 | 21.4% | +0.044 | 0.92 | rejected |
 
 ## Iteration details
 
@@ -121,4 +124,28 @@ Primary metric: Recall@5. Guardrails: P@5 drop <= 0.005, balanced abstention acc
 - **Config:** `experiments/loop/configs/loop_12_graph_pool_100.yaml`
 - **Decision:** rejected: no sufficient gain: R@5 +0.000 (P=0.00), balanced abstention +0.000
 - **Train eval time:** 1.8 s; logged 2026-11-01T16:29:35+00:00
+
+### 13. sentence_max_rerank
+
+- **Hypothesis:** Scoring each sentence of a candidate and keeping the best (with the chunk score) stops boilerplate from diluting a one-sentence answer, improving both ranking and false abstentions.
+- **Diagnosis that triggered it:** full_coverage 81, ranked_too_low 33, false_abstention 21, partial_coverage 20, false_answer 9, false_answer:contract_not_in_corpus 7
+- **Config:** `experiments/loop/configs/loop_13_sentence_max_rerank.yaml`
+- **Decision:** accepted: (B) R@5 non-inferior (+0.014), balanced abstention +0.038
+- **Train eval time:** 101.7 s; logged 2026-11-01T17:40:28+00:00
+
+### 14. l12_reranker_sentence_max
+
+- **Hypothesis:** The L12 reranker alone gained +0.024 R@5 (P=0.87); sentence-level scoring may add enough to make the gain reliable.
+- **Diagnosis that triggered it:** full_coverage 83, ranked_too_low 32, partial_coverage 20, false_abstention 15, false_answer 8, false_answer:contract_not_in_corpus 6
+- **Config:** `experiments/loop/configs/loop_14_l12_reranker_sentence_max.yaml`
+- **Decision:** rejected: guardrail: balanced abstention accuracy fell by 0.021
+- **Train eval time:** 267.5 s; logged 2026-11-01T17:44:58+00:00
+
+### 15. mxbai_reranker
+
+- **Hypothesis:** A newer small reranker trained on broader relevance data may separate legal clauses better than the MS MARCO MiniLM.
+- **Diagnosis that triggered it:** full_coverage 83, ranked_too_low 32, partial_coverage 20, false_abstention 15, false_answer 8, false_answer:contract_not_in_corpus 6
+- **Config:** `experiments/loop/configs/loop_15_mxbai_reranker.yaml`
+- **Decision:** rejected: guardrail: false abstention 21.4% > 20%
+- **Train eval time:** 701.4 s; logged 2026-11-01T17:56:42+00:00
 

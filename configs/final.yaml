@@ -1,5 +1,6 @@
-# FROZEN final configuration, selected on TRAIN by the improvement loop (experiments/improvement_log.md).
-# Identical to configs/graph_hybrid_rag.yaml (graph routing + routed BM25 + cross-encoder reranking).
+# FROZEN final configuration (v2), selected on TRAIN by the improvement loop (iteration 13,
+# experiments/improvement_log.md): graph routing + routed BM25 + cross-encoder reranking with
+# sentence-level scoring (hybrid.rerank_granularity: sentence_max). v1 = configs/graph_hybrid_rag.yaml.
 # Do not change after the test run.
 name: final
 data:
@@ -21,7 +22,7 @@ index:
 retrieval:
   pipeline: graph_hybrid
   top_k: 10
-  abstain_threshold: -5.6523
+  abstain_threshold: -4.6098
 graph:
   output_root: artifacts/graphs
   route_contracts: true
@@ -47,3 +48,4 @@ hybrid:
   rerank_pool: 40
   rerank_query: question
   rerank_batch_size: 8
+  rerank_granularity: sentence_max
