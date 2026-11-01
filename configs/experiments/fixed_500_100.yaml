@@ -1,0 +1,28 @@
+# Chunking study variant (train only). Identical to baseline.yaml except for the chunking block.
+name: fixed_500_100
+
+data:
+  corpus_root: data/raw/corpus
+  document_manifest: data/processed/document_manifest.json
+
+chunking:
+  strategy: fixed
+  chunk_size: 500
+  chunk_overlap: 100
+
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2   # 384-dim, 256-token limit, fast on CPU
+  normalize_whitespace: true   # collapse runs of spaces in the text sent to the model only
+  query_prefix: ""
+  passage_prefix: ""
+  batch_size: 64
+  device: cpu
+
+index:
+  output_root: artifacts/indexes   # git-ignored; one subfolder per index fingerprint
+
+retrieval:
+  top_k: 10
+  # Calibrated on train only (python -m contract_intelligence.retrieval.calibrate):
+  # maximises balanced accuracy of top-1 cosine score, answerable vs unanswerable.
+  abstain_threshold: 0.6085

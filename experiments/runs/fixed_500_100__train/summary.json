@@ -1,0 +1,95 @@
+{
+  "config": "fixed_500_100",
+  "split": "train",
+  "n_answerable": 140,
+  "n_unanswerable": 30,
+  "top_k": 10,
+  "abstain_threshold": 0.6085,
+  "retrieval": {
+    "precision": {
+      "1": 0.0401,
+      "2": 0.0476,
+      "4": 0.0527,
+      "8": 0.0411,
+      "16": 0.0299,
+      "32": 0.0207,
+      "64": 0.0125
+    },
+    "recall": {
+      "1": 0.0291,
+      "2": 0.0897,
+      "4": 0.1956,
+      "8": 0.3193,
+      "16": 0.4486,
+      "32": 0.605,
+      "64": 0.7096
+    },
+    "precision_merged": {
+      "1": 0.0401,
+      "2": 0.0474,
+      "4": 0.0514,
+      "8": 0.0396,
+      "16": 0.0283,
+      "32": 0.0192,
+      "64": 0.0116
+    },
+    "recall_merged": {
+      "1": 0.0291,
+      "2": 0.0846,
+      "4": 0.1775,
+      "8": 0.2864,
+      "16": 0.3973,
+      "32": 0.5321,
+      "64": 0.6217
+    },
+    "doc_hit_rate": {
+      "1": 0.9929,
+      "2": 0.9929,
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "mrr": 0.2024
+  },
+  "end_to_end": {
+    "precision": {
+      "1": 0.0401,
+      "2": 0.0476,
+      "4": 0.0499,
+      "8": 0.0387,
+      "16": 0.0283,
+      "32": 0.0197,
+      "64": 0.012
+    },
+    "recall": {
+      "1": 0.0291,
+      "2": 0.0897,
+      "4": 0.1857,
+      "8": 0.2985,
+      "16": 0.4189,
+      "32": 0.5723,
+      "64": 0.6695
+    }
+  },
+  "abstention": {
+    "unanswerable_correctly_abstained": 0.5,
+    "answerable_wrongly_abstained": 0.0643,
+    "balanced_accuracy": 0.7179,
+    "by_unanswerable_category": {
+      "clause_absent_from_indexed_contract": "3/15",
+      "contract_not_in_corpus": "8/10",
+      "out_of_scope": "4/5"
+    }
+  },
+  "diagnosis_at_k10": {
+    "right_document_wrong_section": 67,
+    "full_coverage": 19,
+    "wrong_abstention": 9,
+    "partial_coverage": 45,
+    "correct_abstention": 15,
+    "false_answer": 15
+  },
+  "seconds": 9.3
+}

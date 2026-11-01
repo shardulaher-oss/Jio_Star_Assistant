@@ -32,7 +32,15 @@ def with_overrides(
     return replace(config, retrieval=retrieval)
 
 
-def format_result(result: SearchResult, width: int = 100, max_chars: int = 600) -> str:
+def shorten(text: str, max_chars: int | None) -> str:
+    """Shorten for display at the last sentence end before max_chars, never mid-sentence."""
+    if not max_chars or len(text) <= max_chars:
+        return text
+    cut = max(text.rfind(". ", 0, max_chars), text.rfind("; ", 0, max_chars))
+    return (text[: cut + 1] if cut > 0 else text[:max_chars]) + " [...]"
+
+
+def format_result(result: SearchResult, width: int = 100, max_chars: int | None = None) -> str:
     lines = [f"Query: {result.query}"]
     if result.abstained:
         lines.append(f"No answer found. {result.message}")
@@ -41,9 +49,7 @@ def format_result(result: SearchResult, width: int = 100, max_chars: int = 600) 
     for p in result.passages:
         lines.append("")
         lines.append(f"#{p.rank}  score {p.score:.3f}  {p.file_path}  [chars {p.start}-{p.end}]")
-        text = " ".join(p.text.split())
-        if len(text) > max_chars:
-            text = text[:max_chars] + " ..."
+        text = shorten(" ".join(p.text.split()), max_chars)
         lines.extend(textwrap.wrap(text, width=width, initial_indent="    ", subsequent_indent="    "))
     return "\n".join(lines)
 
@@ -53,7 +59,11 @@ def cmd_query(args: argparse.Namespace) -> int:
 
     config = with_overrides(load_config(args.config), args.top_k, args.threshold, args.no_abstain)
     result = Retriever.from_config(config).search(args.question)
-    print(json.dumps(asdict(result), indent=2, ensure_ascii=False) if args.json else format_result(result))
+    print(
+        json.dumps(asdict(result), indent=2, ensure_ascii=False)
+        if args.json
+        else format_result(result, max_chars=args.max_chars)
+    )
     return 0
 
 
@@ -93,6 +103,7 @@ def build_parser() -> argparse.ArgumentParser:
     query.add_argument("--threshold", type=float, help="override retrieval.abstain_threshold")
     query.add_argument("--no-abstain", action="store_true", help="always return passages")
     query.add_argument("--json", action="store_true", help="print machine-readable JSON")
+    query.add_argument("--max-chars", type=int, help="shorten displayed passages at a sentence end")
     query.set_defaults(func=cmd_query)
 
     build = sub.add_parser("build-index", help="embed chunks and build the FAISS index")

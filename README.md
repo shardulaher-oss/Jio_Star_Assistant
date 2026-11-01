@@ -60,6 +60,16 @@ $env:PYTHONPATH = "src"
 Chunks are exact slices of the original UTF-8 text (`document[start:end] == chunk.text`),
 trimmed of leading and trailing whitespace. No text is rewritten, so offsets stay valid.
 
+Two strategies are available through `chunking.strategy`:
+
+- `fixed`: character windows of `chunk_size` with `chunk_overlap` (the baseline).
+- `sentence`: whole sentences and paragraphs packed up to `chunk_size` characters, so
+  passages never start or end mid-sentence. `chunk_overlap` is the character budget
+  of whole sentences repeated in the next chunk.
+
+Chunking study variants live in `configs/experiments/`. Results are in
+`experiments/chunking_study.md`.
+
 ## Embeddings and FAISS index
 
 ```powershell

@@ -1,6 +1,6 @@
 import pytest
 
-from contract_intelligence.cli import build_parser, format_result, with_overrides
+from contract_intelligence.cli import build_parser, format_result, shorten, with_overrides
 from contract_intelligence.config import PipelineConfig, RetrievalConfig
 from contract_intelligence.schemas import Passage, SearchResult
 
@@ -29,6 +29,12 @@ def test_format_shows_source_offsets_and_score() -> None:
     text = format_result(SearchResult("q", [passage], False, 0.73, 0.6, "Returned 1 passages."))
     assert "#1  score 0.730  cuad/a.txt  [chars 120-180]" in text
     assert "governed by Delaware law." in text
+
+
+def test_display_shortening_stops_at_a_sentence_end() -> None:
+    text = "First sentence here. Second sentence is longer than the limit allows."
+    assert shorten(text, 30) == "First sentence here. [...]"
+    assert shorten(text, None) == text
 
 
 def test_format_explains_abstention() -> None:

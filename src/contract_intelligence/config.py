@@ -18,12 +18,15 @@ class DataConfig:
 
 @dataclass(frozen=True)
 class ChunkingConfig:
+    # "fixed": character windows. "sentence": whole sentences/paragraphs packed up to
+    # chunk_size characters; chunk_overlap is the character budget of whole sentences
+    # repeated at the start of the next chunk.
     strategy: str = "fixed"
     chunk_size: int = 500
     chunk_overlap: int = 0
 
     def __post_init__(self) -> None:
-        if self.strategy != "fixed":
+        if self.strategy not in ("fixed", "sentence"):
             raise ValueError(f"Unknown chunking strategy: {self.strategy}")
         if self.chunk_size <= 0:
             raise ValueError("chunk_size must be positive")
