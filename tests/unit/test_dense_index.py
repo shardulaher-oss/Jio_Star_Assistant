@@ -1,6 +1,7 @@
 from dataclasses import replace
 from pathlib import Path
 
+import numpy as np
 import pytest
 from fakes import HashingEncoder
 
@@ -48,3 +49,39 @@ def test_each_chunk_is_its_own_nearest_neighbour(tmp_path: Path) -> None:
     loaded = DenseIndex.load(tmp_path)
     assert loaded.chunks == dense.chunks
     assert loaded.index.ntotal == dense.index.ntotal
+
+
+class CountingModel:
+    def __init__(self) -> None:
+        self.encoded = 0
+
+    def encode(self, inputs, **kwargs):
+        self.encoded += len(inputs)
+        return np.array([[float(len(t)), 1.0] for t in inputs])
+
+
+def make_encoder(cache_size: int = 4096):
+    from collections import OrderedDict
+
+    from contract_intelligence.indexing.dense_index import SentenceTransformerEncoder
+
+    encoder = SentenceTransformerEncoder.__new__(SentenceTransformerEncoder)
+    encoder.config, encoder.model, encoder.dimension = EmbeddingConfig(), CountingModel(), 2
+    encoder._query_cache, encoder.query_cache_size, encoder.query_cache_hits = OrderedDict(), cache_size, 0
+    return encoder
+
+
+def test_query_cache_reuses_vectors_and_keeps_order() -> None:
+    encoder = make_encoder()
+    first = encoder.encode_queries(["a", "bb", "a"])
+    second = encoder.encode_queries(["bb", "ccc"])
+    assert encoder.model.encoded == 3  # "a", "bb", "ccc" each encoded once
+    assert first[0].tolist() == first[2].tolist() and second[0].tolist() == first[1].tolist()
+    assert encoder.query_cache_hits == 2
+
+
+def test_query_cache_is_bounded() -> None:
+    encoder = make_encoder(cache_size=2)
+    encoder.encode_queries(["a", "b", "c"])
+    assert list(encoder._query_cache) == ["b", "c"]
+    assert encoder.encode_queries([]).shape == (0, 2)

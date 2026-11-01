@@ -15,6 +15,7 @@ import argparse
 import hashlib
 import json
 import time
+from collections import OrderedDict
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Protocol
@@ -47,6 +48,11 @@ class SentenceTransformerEncoder:
         self.config = config
         self.model = SentenceTransformer(config.model_name, device=config.device)
         self.dimension = self.model.get_embedding_dimension()
+        # Bounded LRU of query vectors: the app, CLI loops and evaluation repeat queries,
+        # and re-encoding an identical string always yields the identical vector.
+        self._query_cache: OrderedDict[str, np.ndarray] = OrderedDict()
+        self.query_cache_size = 4096
+        self.query_cache_hits = 0
 
     def _encode(self, texts: list[str], prefix: str, progress: bool) -> np.ndarray:
         inputs = [prefix + prepare_text(t, self.config.normalize_whitespace) for t in texts]
@@ -60,10 +66,23 @@ class SentenceTransformerEncoder:
         return np.asarray(vectors, dtype=np.float32)
 
     def encode_passages(self, texts: list[str]) -> np.ndarray:
-        return self._encode(texts, self.config.passage_prefix, progress=True)
+        return self._encode(texts, self.config.passage_prefix, progress=len(texts) > 500)
 
     def encode_queries(self, texts: list[str]) -> np.ndarray:
-        return self._encode(texts, self.config.query_prefix, progress=False)
+        """Encode queries in one batch, reusing cached vectors for repeated strings."""
+        missing = list(dict.fromkeys(t for t in texts if t not in self._query_cache))
+        if missing:
+            for text, vector in zip(missing, self._encode(missing, self.config.query_prefix, progress=False)):
+                self._query_cache[text] = vector
+        self.query_cache_hits += len(texts) - len(missing)
+        if not texts:
+            return np.zeros((0, self.dimension), dtype=np.float32)
+        vectors = np.stack([self._query_cache[t] for t in texts])  # before eviction
+        for text in texts:
+            self._query_cache.move_to_end(text)
+        while len(self._query_cache) > self.query_cache_size:
+            self._query_cache.popitem(last=False)
+        return vectors
 
 
 def index_fingerprint(config: PipelineConfig) -> str:
