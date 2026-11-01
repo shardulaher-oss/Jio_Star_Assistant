@@ -69,23 +69,63 @@ points of recall, Graph RAG would be the choice: 100× faster with 83% of the R@
 
 ## LLM use
 
-**No LLM is used** anywhere: not for retrieval, extraction, reranking or the
-improvement loop.
+**Retrieval uses no LLM.** Ranking, graph extraction, reranking, abstention and the
+improvement loop are all LLM-free:
 
 - **It wasn't needed for the main problem.** The dominant failure was structural
   (which contract vs. which clause), and routing plus a small cross-encoder fixed it.
-- **Rules keep provenance and determinism.** Rule-based graph extraction and
-  rule-based proposals are reproducible and every output points to its evidence.
-  LLM extraction would need caching and spot-checking for invented relationships.
-- **Privacy.** On real JioStar agreements, a hosted LLM (e.g. Gemini) would send
-  confidential contract text to a third party. Everything here runs locally on CPU
-  with two ~90 MB open models, so no contract text leaves the machine.
+- **Rules keep provenance and determinism.** Rule-based extraction and proposals are
+  reproducible and point to their evidence.
 
-Where an LLM could plausibly help, as future work measured against this baseline:
+**An optional answer layer uses Gemini** (`gemini-3.1-flash-lite`, temperature 0;
+`answering/generator.py`). It runs only on request (CLI `--answer`, or the app toggle).
+It reads the top 5 retrieved passages and returns a schema-validated answer: answer
+text, type, cited passages, a **verbatim quote** and a confidence level.
+
+- The quote is located in the passages and mapped to exact contract offsets. If it
+  cannot be found word for word, the answer is shown as unverified.
+- If retrieval abstains, the model is never called.
+- Responses are cached in `experiments/llm_cache/answers.jsonl` (committed), so the
+  numbers below reproduce without the API.
+- **Model choice:** `gemini-2.5-flash` is closed to new keys, and `gemini-3.8-flash`
+  timed out in testing.
+
+**Does it help? Train only, 140 answerable + 30 unanswerable queries, 128 model
+calls** (`experiments/runs/final_llm__train/`):
+
+| Measure | Retrieval only | + Gemini answer |
+|---|---|---|
+| Evidence precision (characters) | 0.190 (top-1 passage) | **0.585** (quote) |
+| Evidence recall (characters) | 0.343 (top-1 passage) | 0.384 (quote) |
+| Quotes found verbatim in a passage | – | 99% |
+| Correct abstention / false abstention | 70% / 15% | 93% / **32%** if "not found" also abstains |
+| Cost per query | ~0.6 s, local | + median 1.4 s, ~1,100 input / 126 output tokens, external API |
+
+These are end-to-end figures, where abstained queries score 0.
+
+- **The quote is about 3× more precise** than the best passage at slightly higher
+  recall. For a reviewer, that is the difference between reading one sentence and
+  reading 700 characters.
+- **The LLM's "not found" is not a usable abstention signal.** It said "not found"
+  for 45 of 140 answerable queries; using it to abstain would break the 20%
+  false-abstention guardrail. So the answer is shown **above** the retrieved
+  passages, which always stay visible.
+- **Its quote can miss qualifications elsewhere in the clause** (e.g. a term that
+  ends in 2006 except for named properties, which run to 2008).
+- The test split was not used for the LLM layer. The retrieval numbers in this report
+  are unchanged by it.
+
+**Privacy.** The answer layer sends the top passages (contract text) to Google. That
+is acceptable for the public CUAD corpus and **not acceptable for real JioStar
+agreements** without a data-processing agreement. `answer.allow_external: false`
+blocks it. For confidential use, swap the provider for a self-hosted model (e.g.
+Qwen via Ollama or llama.cpp), which this design supports by changing one client
+class. The key is read from a git-ignored `.env` and is never logged or committed.
+
+Where an LLM could still help, as future work measured against this baseline:
 - query rewriting for vocabulary mismatches (e.g. "right of first refusal" vs. an
   option-grant clause);
-- a local model (e.g. Qwen via Ollama) as a second-stage relevance check for
-  abstention.
+- a local model as a second-stage relevance check for abstention.
 
 ## Evaluation setup
 

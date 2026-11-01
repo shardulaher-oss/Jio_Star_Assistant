@@ -43,8 +43,22 @@ fails if any annotated span does not match `document[start:end]`.
 
 **Models.** Downloaded automatically from Hugging Face on first use:
 `sentence-transformers/all-MiniLM-L6-v2` (embeddings, about 90 MB) and
-`cross-encoder/ms-marco-MiniLM-L6-v2` (reranker, about 90 MB). **No LLM and no API
-keys are used.**
+`cross-encoder/ms-marco-MiniLM-L6-v2` (reranker, about 90 MB). Retrieval needs no
+API keys.
+
+**Optional LLM answers (Gemini).** Only for the answer layer (`--answer`, or the app
+toggle). Put your key in a git-ignored `.env` file in the project root. Never commit
+it or paste it anywhere:
+
+```powershell
+Set-Content -Path .env -Value "GEMINI_API_KEY=<your key>" -Encoding utf8
+git check-ignore .env        # must print ".env"
+```
+
+The top 5 retrieved passages are sent to Google's API. That is fine for public CUAD;
+for confidential contracts set `answer.allow_external: false` (see
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#5-security-and-privacy)). The cached
+answers in `experiments/llm_cache/` reproduce the reported LLM numbers without a key.
 
 ## How to run
 
@@ -55,6 +69,8 @@ keys are used.**
 # CLI: query (text or --json), build an index, evaluate
 python -m contract_intelligence.cli --config configs/final.yaml query "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; What is the governing law for this contract?"
 python -m contract_intelligence.cli --config configs/final.yaml query "Who owns the IP in derivative works?" --top-k 3 --json
+python -m contract_intelligence.cli query "<question>" --answer      # + grounded Gemini answer with a verified quote
+python -m contract_intelligence.cli --log-level INFO --log-json query "<question>"   # structured logs (no query text)
 python -m contract_intelligence.cli --config configs/final.yaml build-index
 python -m contract_intelligence.cli --config configs/final.yaml evaluate --split train
 
@@ -66,7 +82,10 @@ python -m contract_intelligence.evaluation.error_analysis --config configs/graph
 python -m contract_intelligence.evaluation.compare baseline traditional_rag graph_rag hybrid_rag graph_hybrid_rag
 python -m contract_intelligence.evaluation.benchmark --config configs/graph_rag.yaml
 
-# Tests
+# LLM answer layer: evaluate on train (uses the committed cache; no key needed)
+python -m contract_intelligence.answering.evaluate --config configs/final.yaml
+
+# Tests: 171 unit + 7 integration (~20 s); unit only: pytest -m "not integration"
 pytest
 ```
 
@@ -74,6 +93,10 @@ pytest
 `--split test --reason "..."` and is logged to `experiments/test_runs.jsonl`.
 
 ## Architecture
+
+Full component, configuration, performance, reliability and security notes:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 
 ```
 data/raw/benchmarks/cuad.json ─► data/prepare.py ─► data/processed/ (194 queries, split, manifests)
@@ -164,9 +187,11 @@ with machine load.
    original file. Whitespace is collapsed only on the copy sent to the models.
 8. **Test usage.** Test is evaluated once, for the final frozen configuration. Every
    test run is logged with a reason in `experiments/test_runs.jsonl`.
-9. **No LLM.** Retrieval quality is driven by routing and reranking. Rule-based
-   extraction and proposals are deterministic and keep contract text on the machine.
-   See REPORT.md for the reasoning.
+9. **LLM only for answers, never for retrieval.** Retrieval, graph extraction and
+   loop proposals are LLM-free and run locally. Gemini is an optional layer that
+   phrases an answer and must quote a retrieved passage verbatim. It was evaluated on
+   train only; the frozen retrieval config and its test numbers are unaffected. See
+   REPORT.md ("LLM use").
 10. **Primary metric.** Recall@5 was chosen for the improvement loop (a reviewer reads
     about five passages), with precision@5 and abstention as guardrails. See REPORT.md.
 
