@@ -195,14 +195,6 @@ with machine load.
 10. **Primary metric.** Recall@5 was chosen for the improvement loop (a reviewer reads
     about five passages), with precision@5 and abstention as guardrails. See REPORT.md.
 
-## AI tool usage
-
-Claude Code (Anthropic, Claude Opus 5.5) was used as a pair programmer throughout:
-to analyse the brief, design the architecture, write the modules and tests, run the
-experiments and benchmarks, and draft the documentation. Every design decision,
-experiment result and commit was reviewed before it was committed. The
-experiment logs record what was tried and why, including rejected ideas.
-
 ## Confidentiality
 
 The assignment brief and any text copied from it are not in this repository
