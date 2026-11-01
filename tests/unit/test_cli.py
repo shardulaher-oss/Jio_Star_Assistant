@@ -19,7 +19,7 @@ def test_command_is_required() -> None:
 
 def test_overrides_only_change_what_is_given() -> None:
     assert with_overrides(CONFIG).retrieval == CONFIG.retrieval
-    assert with_overrides(CONFIG, top_k=3).retrieval == RetrievalConfig(3, 0.6)
+    assert with_overrides(CONFIG, top_k=3).retrieval == RetrievalConfig(top_k=3, abstain_threshold=0.6)
     assert with_overrides(CONFIG, threshold=0.7).retrieval.abstain_threshold == 0.7
     assert with_overrides(CONFIG, no_abstain=True).retrieval.abstain_threshold is None
 

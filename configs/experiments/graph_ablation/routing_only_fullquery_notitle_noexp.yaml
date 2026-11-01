@@ -1,0 +1,39 @@
+# Graph RAG ablation (train only): graph_rag.yaml with one component switched off.
+name: graph_abl_routing_only_fullquery_notitle_noexp
+
+data:
+  corpus_root: data/raw/corpus
+  document_manifest: data/processed/document_manifest.json
+
+chunking:
+  strategy: sentence
+  chunk_size: 800
+  chunk_overlap: 0
+
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2   # 384-dim, 256-token limit, fast on CPU
+  normalize_whitespace: true   # collapse runs of spaces in the text sent to the model only
+  query_prefix: ""
+  passage_prefix: ""
+  batch_size: 64
+  device: cpu
+
+index:
+  output_root: artifacts/indexes   # git-ignored; one subfolder per index fingerprint
+
+retrieval:
+  pipeline: graph
+  top_k: 10
+  # Calibrated on train only (python -m contract_intelligence.retrieval.calibrate):
+  # maximises balanced accuracy of the top-1 graph score, answerable vs unanswerable.
+  abstain_threshold: 0.5214
+
+graph:
+  output_root: artifacts/graphs
+  route_contracts: true
+  route_min_score: 3.0
+  route_keep_ratio: 0.5
+  question_only: false
+  section_title_weight: 0.0
+  expand_top: 0
+  expansion_decay: 0.9

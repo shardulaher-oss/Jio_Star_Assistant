@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Protocol
+
 from contract_intelligence.config import PipelineConfig, RetrievalConfig
 from contract_intelligence.indexing.dense_index import (
     DenseIndex,
@@ -10,6 +12,39 @@ from contract_intelligence.indexing.dense_index import (
     load_or_build,
 )
 from contract_intelligence.schemas import Passage, SearchResult
+
+
+class Ranker(Protocol):
+    def rank(self, queries: list[str], k: int) -> list[list[tuple[int, float]]]:
+        """Per query, up to k (chunk position, score) pairs, best first."""
+        ...
+
+
+class DenseRanker:
+    """Traditional RAG: cosine similarity of the full query against every chunk."""
+
+    def __init__(self, encoder: Encoder, dense: DenseIndex) -> None:
+        self.encoder = encoder
+        self.dense = dense
+
+    def rank(self, queries: list[str], k: int) -> list[list[tuple[int, float]]]:
+        scores, positions = self.dense.search(self.encoder.encode_queries(queries), k)
+        return [
+            [(int(p), float(s)) for s, p in zip(score_row, position_row) if p >= 0]  # FAISS pads with -1
+            for score_row, position_row in zip(scores, positions)
+        ]
+
+
+def build_ranker(config: PipelineConfig, encoder: Encoder, dense: DenseIndex) -> Ranker:
+    pipeline = config.retrieval.pipeline
+    if pipeline == "dense":
+        return DenseRanker(encoder, dense)
+    if pipeline == "graph":
+        from contract_intelligence.graph.builder import load_or_build_graph
+        from contract_intelligence.retrieval.graph_ranker import GraphRanker
+
+        return GraphRanker(encoder, dense, load_or_build_graph(config), config.graph)
+    raise ValueError(f"Unknown retrieval pipeline: {pipeline}")
 
 
 def decide(passages: list[Passage], config: RetrievalConfig) -> tuple[bool, str]:
@@ -25,26 +60,27 @@ def decide(passages: list[Passage], config: RetrievalConfig) -> tuple[bool, str]
 
 
 class Retriever:
-    def __init__(self, config: PipelineConfig, encoder: Encoder, dense: DenseIndex) -> None:
+    def __init__(
+        self, config: PipelineConfig, encoder: Encoder, dense: DenseIndex, ranker: Ranker | None = None
+    ) -> None:
         self.config = config
         self.encoder = encoder
         self.dense = dense
+        self.ranker = ranker or DenseRanker(encoder, dense)
 
     @classmethod
     def from_config(cls, config: PipelineConfig) -> Retriever:
         encoder = SentenceTransformerEncoder(config.embedding)
-        return cls(config, encoder, load_or_build(config, encoder))
+        dense = load_or_build(config, encoder)
+        return cls(config, encoder, dense, build_ranker(config, encoder, dense))
 
     def candidates(self, queries: list[str], k: int | None = None) -> list[list[Passage]]:
         """Ranked passages per query, before any abstention decision."""
         k = k or self.config.retrieval.top_k
-        scores, positions = self.dense.search(self.encoder.encode_queries(queries), k)
         results = []
-        for score_row, position_row in zip(scores, positions):
+        for ranked in self.ranker.rank(queries, k):
             passages = []
-            for score, position in zip(score_row, position_row):
-                if position < 0:  # FAISS pads with -1 when fewer than k vectors exist
-                    continue
+            for position, score in ranked:
                 chunk = self.dense.chunks[position]
                 passages.append(Passage(
                     rank=len(passages) + 1,

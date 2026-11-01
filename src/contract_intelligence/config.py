@@ -52,10 +52,19 @@ class IndexConfig:
 @dataclass(frozen=True)
 class GraphConfig:
     output_root: str = "artifacts/graphs"
+    # Graph retrieval (pipeline: graph)
+    route_contracts: bool = True  # restrict search to contracts the query names
+    route_min_score: float = 3.0  # min IDF-weighted name overlap to trust a route
+    route_keep_ratio: float = 0.5  # keep contracts scoring >= ratio * best
+    question_only: bool = True  # embed the question without the "Consider the ..." prefix
+    section_title_weight: float = 0.3  # boost for question vs section-title similarity
+    expand_top: int = 5  # seeds whose REFERENCES / DEFINES neighbours are added
+    expansion_decay: float = 0.9  # neighbour score = seed score * decay
 
 
 @dataclass(frozen=True)
 class RetrievalConfig:
+    pipeline: str = "dense"  # dense | graph
     top_k: int = 10
     # Abstain when the best cosine score is below this. A similarity score, not a
     # probability: it is only meaningful relative to scores from the same model.
