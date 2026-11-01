@@ -41,7 +41,10 @@ def build_reranker(config: PipelineConfig):
     from contract_intelligence.retrieval.reranking import CrossEncoderReranker
 
     return CrossEncoderReranker(
-        config.hybrid.reranker_model, config.hybrid.rerank_batch_size, config.embedding.device
+        config.hybrid.reranker_model,
+        config.hybrid.rerank_batch_size,
+        config.embedding.device,
+        cache_dir=config.resolve("artifacts/cache"),
     )
 
 

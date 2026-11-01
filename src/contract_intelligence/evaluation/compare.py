@@ -22,31 +22,31 @@ def main() -> None:
     parser.add_argument("--benchmarks", default="experiments/benchmarks")
     args = parser.parse_args()
 
-    ks = ("1", "4", "8", "16", "64")
-    print(f"Retrieval ({args.split}, merged metrics)\n")
-    print("| Config | n | " + " | ".join(f"R@{k}" for k in ks) + " | P@1 | P@8 | MRR | Right contract @1 |")
-    print("|---" * (len(ks) + 6) + "|")
+    ks = ("1", "3", "5", "10")
+    print(f"Retrieval ({args.split}; LegalBench-RAG character-level metrics, mean over queries)\n")
+    print("| Config | n | " + " | ".join(f"P@{k} | R@{k}" for k in ks) + " | R@64 | MRR | Right contract @1 |")
+    print("|---" * (2 * len(ks) + 5) + "|")
     for name in args.names:
         s = load(Path(args.runs) / f"{name}__{args.split}" / "summary.json")
         if s is None:
             print(f"| {name} | (no run) |")
             continue
         r = s["retrieval"]
-        cells = [f"{r['recall_merged'][k]:.3f}" for k in ks]
+        cells = [f"{r['precision'][k]:.3f} | {r['recall'][k]:.3f}" for k in ks]
         print(f"| {name} | {s['n_answerable']} | " + " | ".join(cells)
-              + f" | {r['precision_merged']['1']:.3f} | {r['precision_merged']['8']:.3f}"
-              + f" | {r['mrr']:.3f} | {r['doc_hit_rate']['1']:.3f} |")
+              + f" | {r['recall']['64']:.3f} | {r['mrr']:.3f} | {r['doc_hit_rate']['1']:.3f} |")
 
     print("\nAbstention\n")
-    print("| Config | Threshold | n unanswerable | Correctly abstained | Wrongly abstained (answerable) | Balanced acc. | By category |")
-    print("|---|---|---|---|---|---|---|")
+    print("| Config | Threshold | n unans. / ans. | Correct abstention | Results returned for unanswerable | False abstention (answerable rejected) | Balanced acc. | Abstained by category |")
+    print("|---|---|---|---|---|---|---|---|")
     for name in args.names:
         s = load(Path(args.runs) / f"{name}__{args.split}" / "summary.json")
         if s is None:
             continue
         a = s["abstention"]
         cats = ", ".join(f"{k.split('_')[0]} {v}" for k, v in a["by_unanswerable_category"].items())
-        print(f"| {name} | {s['abstain_threshold']} | {s['n_unanswerable']} | {a['unanswerable_correctly_abstained']:.1%}"
+        print(f"| {name} | {s['abstain_threshold']} | {s['n_unanswerable']} / {s['n_answerable']}"
+              f" | {a['unanswerable_correctly_abstained']:.1%} | {1 - a['unanswerable_correctly_abstained']:.1%}"
               f" | {a['answerable_wrongly_abstained']:.1%} | {a['balanced_accuracy']:.3f} | {cats} |")
 
     rows = [(n, load(Path(args.benchmarks) / f"{n}.json")) for n in args.names]

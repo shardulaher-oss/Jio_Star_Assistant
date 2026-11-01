@@ -17,25 +17,33 @@ architecture choice uses test data.
 Reproduce the tables with
 `python -m contract_intelligence.evaluation.compare baseline traditional_rag graph_rag hybrid_rag graph_hybrid_rag`.
 
-## Retrieval (merged character-level metrics, n = 140)
+## Retrieval (n = 140)
 
-| Config | R@1 | R@4 | R@8 | R@16 | R@64 | P@1 | P@8 | MRR | Right contract @1 |
-|---|---|---|---|---|---|---|---|---|---|
-| baseline | 0.026 | 0.194 | 0.278 | 0.364 | 0.565 | 0.046 | 0.038 | 0.198 | 0.993 |
-| traditional_rag | 0.060 | 0.247 | 0.374 | 0.504 | 0.737 | 0.044 | 0.040 | 0.209 | 0.993 |
-| graph_rag | 0.225 | 0.508 | 0.659 | 0.790 | **0.940** | 0.139 | **0.062** | 0.428 | 0.986 |
-| hybrid_rag | 0.077 | 0.259 | 0.364 | 0.497 | 0.679 | 0.071 | 0.035 | 0.221 | 0.243 |
-| **graph_hybrid_rag** | **0.367** | **0.642** | **0.727** | **0.831** | **0.940** | **0.202** | **0.062** | **0.574** | 0.979 |
+Character-level precision and recall exactly as in the LegalBench-RAG authors' code
+(`QAResult.precision` / `recall`), averaged over queries with equal weight. All four
+architectures use non-overlapping chunks, so these equal the merged variants.
+
+| Config | P@1 | R@1 | P@3 | R@3 | P@5 | R@5 | P@10 | R@10 | R@64 | MRR | Right contract @1 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| baseline | 0.046 | 0.026 | 0.051 | 0.147 | 0.051 | 0.231 | 0.034 | 0.308 | 0.565 | 0.198 | 0.993 |
+| traditional_rag | 0.044 | 0.060 | 0.043 | 0.182 | 0.046 | 0.293 | 0.036 | 0.442 | 0.737 | 0.209 | 0.993 |
+| graph_rag | 0.139 | 0.225 | 0.100 | 0.435 | 0.077 | 0.546 | **0.052** | 0.678 | **0.940** | 0.428 | 0.986 |
+| hybrid_rag | 0.071 | 0.077 | 0.055 | 0.186 | 0.045 | 0.282 | 0.032 | 0.411 | 0.679 | 0.221 | 0.243 |
+| **graph_hybrid_rag** | **0.202** | **0.367** | **0.135** | **0.600** | **0.088** | **0.660** | **0.052** | **0.749** | **0.940** | **0.574** | 0.979 |
 
 ## Abstention (each threshold calibrated on train for its own score)
 
-| Config | Score used | Threshold | Unanswerable abstained (n = 30) | Answerable wrongly abstained (n = 140) | Balanced acc. | Absent clause | Not in corpus | Out of scope |
-|---|---|---|---|---|---|---|---|---|
-| baseline | cosine | 0.6085 | 50.0% | 7.9% | 0.711 | 2/15 | 8/10 | 5/5 |
-| traditional_rag | cosine | 0.5719 | 43.3% | 0.7% | 0.713 | 2/15 | 7/10 | 4/5 |
-| graph_rag | graph score | 0.5214 | 70.0% | 31.4% | 0.693 | 12/15 | 5/10 | 4/5 |
-| hybrid_rag | cross-encoder logit | 1.5354 | 76.7% | 52.1% | 0.623 | 13/15 | 5/10 | 5/5 |
-| **graph_hybrid_rag** | cross-encoder logit | −5.6523 | 70.0% | 15.0% | **0.775** | **15/15** | 3/10 | 3/5 |
+Correct abstention: an unanswerable query returns nothing. Results returned for
+unanswerable: the opposite. False abstention (answerable query rejection): an
+answerable benchmark query returns nothing.
+
+| Config | Score used | Threshold | Correct abstention (n = 30) | Results returned for unanswerable | False abstention (n = 140) | Balanced acc. | Absent clause | Not in corpus | Out of scope |
+|---|---|---|---|---|---|---|---|---|---|
+| baseline | cosine | 0.6085 | 50.0% | 50.0% | 7.9% | 0.711 | 2/15 | 8/10 | 5/5 |
+| traditional_rag | cosine | 0.5719 | 43.3% | 56.7% | 0.7% | 0.713 | 2/15 | 7/10 | 4/5 |
+| graph_rag | graph score | 0.5214 | 70.0% | 30.0% | 31.4% | 0.693 | 12/15 | 5/10 | 4/5 |
+| hybrid_rag | cross-encoder logit | 1.5354 | 76.7% | 23.3% | 52.1% | 0.623 | 13/15 | 5/10 | 5/5 |
+| **graph_hybrid_rag** | cross-encoder logit | −5.6523 | 70.0% | 30.0% | 15.0% | **0.775** | **15/15** | 3/10 | 3/5 |
 
 ## Cost (one laptop CPU: Intel, 10 cores, no GPU, 15.7 GB RAM; relative, not absolute)
 
@@ -85,7 +93,7 @@ RAG is the fastest because it scores only the routed contract's clauses.
    no better than dense. Adding global dense search to the reranked graph-hybrid
    pipeline drops recall@8 from 0.727 to 0.543 (`experiments/runs/gh_*`). The
    reranker only helps when every candidate comes from the routed contract.
-3. **Best quality: Graph-Hybrid RAG.** Recall@1 0.367 (6× Traditional RAG),
+3. **Best quality: Graph-Hybrid RAG.** Recall@1 0.367 (6× Traditional RAG), recall@5 0.660,
    recall@8 0.727, MRR 0.574, and the best balanced abstention (0.775, all 15
    absent-clause queries caught). The price is about 0.6 s per query on CPU and
    +200 MB for the cross-encoder.

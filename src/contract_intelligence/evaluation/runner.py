@@ -32,9 +32,10 @@ from contract_intelligence.evaluation.metrics import (
     recall,
     recall_merged,
 )
-from contract_intelligence.retrieval.retriever import Retriever, decide
+from contract_intelligence.retrieval.retriever import Retriever
 
-K_VALUES = (1, 2, 4, 8, 16, 32, 64)
+# 1, 3, 5, 10 for the headline tables; powers of two as in the LegalBench-RAG paper.
+K_VALUES = (1, 2, 3, 4, 5, 8, 10, 16, 32, 64)
 
 
 def load_split(config: PipelineConfig, split: str) -> tuple[list[dict], list[dict]]:
@@ -49,7 +50,11 @@ def load_split(config: PipelineConfig, split: str) -> tuple[list[dict], list[dic
     return answerable, negatives
 
 
-def evaluate(config: PipelineConfig, retriever: Retriever, split: str) -> tuple[dict, list[dict]]:
+def score_queries(config: PipelineConfig, retriever: Retriever, split: str) -> list[dict]:
+    """Retrieve for every query of the split and score the ranking (no abstention yet).
+
+    Gold spans are used only here, after retrieval, to score the returned ranking.
+    """
     answerable, negatives = load_split(config, split)
     max_k = max(max(K_VALUES), config.retrieval.top_k)
     diag_k = config.retrieval.top_k
@@ -61,17 +66,13 @@ def evaluate(config: PipelineConfig, retriever: Retriever, split: str) -> tuple[
     for record, passages in zip(answerable, ranked):
         gold = [Span(s["file_path"], s["span"][0], s["span"][1]) for s in record["snippets"]]
         spans = [Span(p.file_path, p.start, p.end) for p in passages]
-        abstained, _ = decide(passages, config.retrieval)
-        top = spans[:diag_k]
         per_query.append({
             "query": record["query"],
             "answerable": True,
-            "abstained": abstained,
             "top_score": passages[0].score if passages else None,
             "first_relevant_rank": first_relevant_rank(spans, gold),
-            "diagnosis": dx.diagnose_answerable(top, gold, abstained),
             "gold": [list(g) for g in gold],
-            "retrieved_top": [[*s, round(p.score, 4)] for s, p in zip(top, passages)],
+            "retrieved_top": [[*s, round(p.score, 4)] for s, p in zip(spans[:diag_k], passages)],
             "precision": {k: precision(spans[:k], gold) for k in K_VALUES},
             "recall": {k: recall(spans[:k], gold) for k in K_VALUES},
             "precision_merged": {k: precision_merged(spans[:k], gold) for k in K_VALUES},
@@ -79,17 +80,39 @@ def evaluate(config: PipelineConfig, retriever: Retriever, split: str) -> tuple[
             "doc_hit": {k: any(s.file_path in {g.file_path for g in gold} for s in spans[:k]) for k in K_VALUES},
         })
     for record, passages in zip(negatives, ranked_neg):
-        abstained, _ = decide(passages, config.retrieval)
         per_query.append({
             "query": record["query"],
             "answerable": False,
             "category": record["category"],
-            "abstained": abstained,
             "top_score": passages[0].score if passages else None,
-            "diagnosis": dx.diagnose_unanswerable(abstained),
             "retrieved_top": [[p.file_path, p.start, p.end, round(p.score, 4)] for p in passages],
         })
+    return per_query
 
+
+def apply_threshold(per_query: list[dict], threshold: float | None) -> list[dict]:
+    """Set `abstained` and `diagnosis` for a threshold (same rule as retriever.decide)."""
+    out = []
+    for q in per_query:
+        abstained = q["top_score"] is None or (threshold is not None and q["top_score"] < threshold)
+        if q["answerable"]:
+            gold = [Span(*g) for g in q["gold"]]
+            top = [Span(*r[:3]) for r in q["retrieved_top"]]
+            diagnosis = dx.diagnose_answerable(top, gold, abstained)
+        else:
+            diagnosis = dx.diagnose_unanswerable(abstained)
+        out.append({**q, "abstained": abstained, "diagnosis": diagnosis})
+    return out
+
+
+def evaluate(config: PipelineConfig, retriever: Retriever, split: str) -> tuple[dict, list[dict]]:
+    per_query = apply_threshold(score_queries(config, retriever, split), config.retrieval.abstain_threshold)
+    return summarize(config, split, per_query), per_query
+
+
+def summarize(config: PipelineConfig, split: str, per_query: list[dict], threshold: float | None = None) -> dict:
+    threshold = config.retrieval.abstain_threshold if threshold is None else threshold
+    diag_k = config.retrieval.top_k
     pos = [q for q in per_query if q["answerable"]]
     neg = [q for q in per_query if not q["answerable"]]
 
@@ -108,7 +131,7 @@ def evaluate(config: PipelineConfig, retriever: Retriever, split: str) -> tuple[
         "n_answerable": len(pos),
         "n_unanswerable": len(neg),
         "top_k": config.retrieval.top_k,
-        "abstain_threshold": config.retrieval.abstain_threshold,
+        "abstain_threshold": threshold,
         "retrieval": {
             "precision": at_k("precision", pos),
             "recall": at_k("recall", pos),
@@ -122,7 +145,11 @@ def evaluate(config: PipelineConfig, retriever: Retriever, split: str) -> tuple[
             "recall": at_k("recall", pos, gate=True),
         },
         "abstention": {
+            # correct abstention: unanswerable query, nothing returned
             "unanswerable_correctly_abstained": round(abstain_rate, 4),
+            # incorrect results returned for an unanswerable query
+            "unanswerable_wrongly_answered": round(1 - abstain_rate, 4),
+            # false abstention (answerable query rejection): answerable query, nothing returned
             "answerable_wrongly_abstained": round(1 - answered_rate, 4),
             "balanced_accuracy": round((answered_rate + abstain_rate) / 2, 4),
             "by_unanswerable_category": {
@@ -133,7 +160,7 @@ def evaluate(config: PipelineConfig, retriever: Retriever, split: str) -> tuple[
         },
         f"diagnosis_at_k{diag_k}": dict(Counter(q["diagnosis"] for q in per_query)),
     }
-    return summary, per_query
+    return summary
 
 
 def _git_commit() -> str:
