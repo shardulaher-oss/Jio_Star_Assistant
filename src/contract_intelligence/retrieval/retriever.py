@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import logging
 import time
 from typing import Protocol
@@ -96,11 +97,25 @@ class Retriever:
         dense = load_or_build(config, encoder)
         return cls(config, encoder, dense, build_ranker(config, encoder, dense))
 
-    def candidates(self, queries: list[str], k: int | None = None) -> list[list[Passage]]:
-        """Ranked passages per query, before any abstention decision."""
+    def candidates(
+        self, queries: list[str], k: int | None = None, contracts: set[str] | None = None
+    ) -> list[list[Passage]]:
+        """Ranked passages per query, before any abstention decision.
+
+        `contracts` limits the search to those contract file paths (chosen in the UI).
+        Graph pipelines use it in place of routing; other pipelines filter their ranking.
+        """
         k = k or self.config.retrieval.top_k
+        if contracts and "restrict" in inspect.signature(self.ranker.rank).parameters:
+            ranked_lists = self.ranker.rank(queries, k, restrict=set(contracts))
+        elif contracts:
+            everything = self.ranker.rank(queries, len(self.dense.chunks))
+            ranked_lists = [[(p, s) for p, s in row if self.dense.chunks[p].file_path in contracts][:k]
+                            for row in everything]
+        else:
+            ranked_lists = self.ranker.rank(queries, k)
         results = []
-        for ranked in self.ranker.rank(queries, k):
+        for ranked in ranked_lists:
             passages = []
             for position, score in ranked:
                 chunk = self.dense.chunks[position]
@@ -116,11 +131,13 @@ class Retriever:
             results.append(passages)
         return results
 
-    def search_many(self, queries: list[str], k: int | None = None) -> list[SearchResult]:
+    def search_many(
+        self, queries: list[str], k: int | None = None, contracts: set[str] | None = None
+    ) -> list[SearchResult]:
         started = time.perf_counter()
         checked = [clean_query(q) for q in queries]
         valid = [text for text, problem in checked if problem is None]
-        ranked = iter(self.candidates(valid, k) if valid else [])
+        ranked = iter(self.candidates(valid, k, contracts) if valid else [])
         results = []
         for text, problem in checked:
             if problem is not None:  # rejected input: explain instead of searching
@@ -146,5 +163,5 @@ class Retriever:
             })
         return results
 
-    def search(self, query: str, k: int | None = None) -> SearchResult:
-        return self.search_many([query], k)[0]
+    def search(self, query: str, k: int | None = None, contracts: set[str] | None = None) -> SearchResult:
+        return self.search_many([query], k, contracts)[0]

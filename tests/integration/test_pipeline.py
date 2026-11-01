@@ -110,12 +110,27 @@ def test_web_app_renders_results_and_abstention() -> None:
 
     app = AppTest.from_file(str(ROOT / "src/contract_intelligence/web/app.py"), default_timeout=300).run()
     assert not app.exception
-    for box in app.checkbox:  # tests must never call the external LLM
-        if "Gemini" in box.label:
-            box.uncheck()
-    app.selectbox[0].select("configs/traditional_rag.yaml").run()
+    for toggle in app.toggle:  # tests must never call the external LLM
+        if "Gemini" in toggle.label:
+            toggle.set_value(False)
+    {s.label: s for s in app.selectbox}["Pipeline"].select("configs/traditional_rag.yaml").run()
     app.text_area(key="question").input("Who won the ICC Cricket World Cup in 2011?").run()
     assert not app.exception and app.warning
     app.text_area(key="question").input("This Agreement shall be governed by the laws of").run()
     assert not app.exception and any(s.value == "Retrieved passages" for s in app.subheader)
     assert not any(s.value == "Answer" for s in app.subheader)
+
+
+def test_web_app_contract_picker_restricts_the_search() -> None:
+    from streamlit.testing.v1 import AppTest
+
+    app = AppTest.from_file(str(ROOT / "src/contract_intelligence/web/app.py"), default_timeout=300).run()
+    for toggle in app.toggle:
+        toggle.set_value(False)
+    boxes = {s.label: s for s in app.selectbox}
+    boxes["Contract"].select(next(o for o in boxes["Contract"].options if "Papa John" in o))
+    boxes["Question type"].select("What is the governing law for this contract?").run()
+    assert not app.exception
+    passages = [m.value for m in app.markdown if m.value.startswith("**#")]
+    assert passages and all("PapaJohns" in p for p in passages)
+    assert len(app.tabs) == 3 and len(app.dataframe) >= 2  # evaluation tab tables

@@ -126,3 +126,20 @@ def test_retriever_uses_graph_ranker_and_keeps_offsets() -> None:
     for p in result.passages:
         doc = next(d for d in DOCS if d.file_path == p.file_path)
         assert doc.text[p.start : p.end] == p.text
+
+
+def test_user_chosen_contract_overrides_routing() -> None:
+    ranker, dense = make_ranker()
+    hybrid = GraphHybridRanker(ranker.encoder, dense, ranker, HybridConfig(bm25_query="question"))
+    starlight = {"cuad/StarlightPictures-License.txt"}
+    query = "Consider the Roanoke Gas franchise with Vinton; governed by the laws of which state"
+    for ranked in (ranker.rank([query], k=10, restrict=starlight)[0], hybrid.rank([query], k=10, restrict=starlight)[0]):
+        assert ranked and {dense.chunks[p].file_path for p, _ in ranked} == starlight
+
+
+def test_retriever_filters_non_graph_pipelines_to_the_chosen_contract() -> None:
+    encoder = HashingEncoder()
+    _, dense = make_ranker()
+    retriever = Retriever(PipelineConfig(name="d"), encoder, dense)  # dense ranker, no restrict support
+    result = retriever.search("governed by the laws of", contracts={"cuad/RoanokeGas-Franchise.txt"})
+    assert result.passages and {p.file_path for p in result.passages} == {"cuad/RoanokeGas-Franchise.txt"}

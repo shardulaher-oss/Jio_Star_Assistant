@@ -132,7 +132,10 @@ class GraphRanker:
         parse = parse_query(query)
         return self.router.route(parse.contract or query, self.config.route_min_score, self.config.route_keep_ratio)
 
-    def rank(self, queries: list[str], k: int) -> list[list[tuple[int, float]]]:
+    def rank(
+        self, queries: list[str], k: int, restrict: set[str] | None = None
+    ) -> list[list[tuple[int, float]]]:
+        """Rank clauses; `restrict` (contract file paths chosen by the user) replaces routing."""
         parsed = [parse_query(q) for q in queries]
         texts = [p.question if self.config.question_only and p.question else q for p, q in zip(parsed, queries)]
         query_vectors = self.encoder.encode_queries(texts)
@@ -140,10 +143,10 @@ class GraphRanker:
 
         results = []
         for qi, (query, parse) in enumerate(zip(queries, parsed)):
-            if self.names_unknown_contract(query):
+            if restrict is None and self.names_unknown_contract(query):
                 results.append([])
                 continue
-            routed = self.route(query)
+            routed = set(restrict) if restrict is not None else self.route(query)
             candidates = self.candidates(routed)
             scores = self.vectors[candidates] @ query_vectors[qi]
             score = {}
