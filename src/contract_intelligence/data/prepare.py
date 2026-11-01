@@ -142,6 +142,21 @@ def prepare(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+    document_manifest = []
+    for relative_path in referenced_paths:
+        document_path = corpus_root / relative_path
+        document_bytes = document_path.read_bytes()
+        document_manifest.append(
+            {
+                "file_path": relative_path,
+                "char_count": len(document_bytes.decode("utf-8")),
+                "sha256": hashlib.sha256(document_bytes).hexdigest(),
+            }
+        )
+    (manifest_path.parent / "document_manifest.json").write_text(
+        json.dumps(document_manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
     query_dir = manifest_path.parent / "queries"
     query_dir.mkdir(parents=True, exist_ok=True)
     for name, query_records in (

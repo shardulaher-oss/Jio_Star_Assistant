@@ -1,0 +1,212 @@
+[
+  {
+    "id": "unanswerable-001",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 1?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-002",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 2?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-003",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 3?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-004",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 4?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-005",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 5?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-006",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 6?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-007",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 7?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-008",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 8?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-009",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 9?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-010",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 10?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-011",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 11?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-012",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 12?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-013",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 13?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-014",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 14?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-015",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 15?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-016",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 16?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-017",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 17?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-018",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 18?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-019",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 19?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-020",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 20?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-021",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 21?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-022",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 22?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-023",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 23?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-024",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 24?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-025",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 25?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-026",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 26?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-027",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 27?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-028",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 28?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-029",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 29?",
+    "answerable": false,
+    "split": "test",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  },
+  {
+    "id": "unanswerable-030",
+    "query": "What is the governing law of the fictional Aurora Moon Streaming Agreement 30?",
+    "answerable": false,
+    "split": "train",
+    "reason": "The named agreement is not among the indexed CUAD contracts."
+  }
+]

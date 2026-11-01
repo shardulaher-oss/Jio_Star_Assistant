@@ -14,6 +14,32 @@ See [`docs/PROJECT_BLUEPRINT.md`](docs/PROJECT_BLUEPRINT.md) for:
 - module responsibilities and dependency direction;
 - risks, assumptions, and the phased delivery roadmap.
 
+## Phase 1 dataset preparation
+
+The preparation command reads the permitted CUAD benchmark, applies the exact
+benchmark `mini()` selector, downloads only the referenced contracts, validates
+all annotated character spans, assigns the exact SHA-256 train/test split, and
+writes reproducible metadata:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m contract_intelligence.data.prepare
+```
+
+Expected dataset statistics:
+
+```text
+query_count: 194
+train_count: 140
+test_count: 54
+referenced_contract_count: 29
+unanswerable_count: 30
+```
+
+The source benchmark and contracts are downloaded under ignored `data/raw/`.
+The selected query files, query manifest, document manifest, and frozen
+unanswerable set are written under tracked `data/processed/` and `data/queries/`.
+
 ## Planned reproducibility contract
 
 The implementation must select exactly 194 CUAD queries with the benchmark authors' `mini()` procedure, index only contracts referenced by those queries, preserve UTF-8 character offsets, use the specified SHA-256 split, freeze at least 30 unanswerable questions before optimization, and keep all improvement decisions reproducible from configuration and experiment logs.
